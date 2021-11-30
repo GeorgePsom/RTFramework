@@ -2,12 +2,16 @@
 #include "Game.h"
 
 
+
 Game::Game(UINT width, UINT height, std::wstring name) :
     DXSample(width, height, name),
     m_frameIndex(0),
     m_viewport(0.0f, 0.0f, static_cast<float>(width), static_cast<float>(height)),
     m_scissorRect(0, 0, static_cast<LONG>(width), static_cast<LONG>(height)),
-    m_rtvDescriptorSize(0)
+    m_rtvDescriptorSize(0),
+    TextureWidth(width),
+    TextureHeight(height),
+    m_camera(Camera(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), 45.0f, 2.0f, 1.0f))
 {
 }
 
@@ -224,9 +228,16 @@ void Game::LoadAssets()
         // Define the geometry for a triangle.
         Vertex triangleVertices[] =
         {
-            { { 0.0f, 0.25f * m_aspectRatio, 0.0f }, { 0.5f, 0.0f } },
-            { { 0.25f, -0.25f * m_aspectRatio, 0.0f }, { 1.0f, 1.0f } },
-            { { -0.25f, -0.25f * m_aspectRatio, 0.0f }, { 0.0f, 1.0f } }
+            // Triangle to produce quad for image post-processing
+            // 3 |  \
+            // 2 |   \
+            // 1 |_ _ \
+            // 0 |_|_| \
+            //-1 |_|_|__\3
+            //    0 1 
+            { { -1.0f, -1.0f, 0.0f }, { 0.0f, 0.0f } },
+            { { -1.0f, 3.0f , 0.0f }, { 0.0f, 2.0f } },
+            { { 3.0f, -1.0f , 0.0f }, { 2.0f, 0.0f } }
         };
 
         const UINT vertexBufferSize = sizeof(triangleVertices);
@@ -344,34 +355,45 @@ void Game::LoadAssets()
 std::vector<UINT8> Game::GenerateTextureData()
 {
     const UINT rowPitch = TextureWidth * TexturePixelSize;
-    const UINT cellPitch = rowPitch >> 3;        // The width of a cell in the checkboard texture.
-    const UINT cellHeight = TextureWidth >> 3;    // The height of a cell in the checkerboard texture.
     const UINT textureSize = rowPitch * TextureHeight;
 
     std::vector<UINT8> data(textureSize);
     UINT8* pData = &data[0];
-
-    for (UINT n = 0; n < textureSize; n += TexturePixelSize)
+    float imageAspectRatio = (float)TextureWidth / (float)TextureHeight;
+    float viewport_height = 2.0f;
+    float viewport_width = imageAspectRatio * viewport_height;
+    Sphere sphere(XMFLOAT3(0.0f, 0.0f, -5.0f), 0.5f);
+    for (UINT j = 0; j < TextureHeight; j++)
     {
-        UINT x = n % rowPitch;
-        UINT y = n / rowPitch;
-        UINT i = x / cellPitch;
-        UINT j = y / cellHeight;
+        for (UINT i = 0; i < TextureWidth; i++)
+        {         
+            UINT n = rowPitch * j + i * TexturePixelSize; 
+            float u = float(i) / (static_cast<float>(TextureWidth) - 1.0f);
+            float v = 1.0f - float(j) / (static_cast<float>(TextureHeight) -1.0f);
+            XMFLOAT3 directionf;
+            XMVECTOR P = XMLoadFloat3(&m_camera.P0) + u * XMVectorSubtract(XMLoadFloat3(&m_camera.P1), XMLoadFloat3(&m_camera.P0))
+                + v * XMVectorSubtract(XMLoadFloat3(&m_camera.P2), XMLoadFloat3(&m_camera.P0));
+            XMVECTOR direction = XMVectorSubtract(P, XMLoadFloat3(&m_camera.position));
+            direction = XMVector3Normalize(direction);
+            XMStoreFloat3(&directionf, direction);
+          
+            Ray ray(m_camera.position, directionf, 0.0f);
+            UINT8 R = 0;
+            UINT8 G = 0;
+            UINT8 B = 0;
+            if (sphere.Intersect(ray))
+            {
+                R = 255;
+            }
+            
+          
 
-        if (i % 2 == j % 2)
-        {
-            pData[n] = 0x00;        // R
-            pData[n + 1] = 0x00;    // G
-            pData[n + 2] = 0x00;    // B
-            pData[n + 3] = 0xff;    // A
+            pData[n] = R;
+            pData[n + 1] = G;
+            pData[n + 2] = B;
+            pData[n + 3] = 255;
         }
-        else
-        {
-            pData[n] = 0xff;        // R
-            pData[n + 1] = 0xff;    // G
-            pData[n + 2] = 0xff;    // B
-            pData[n + 3] = 0xff;    // A
-        }
+
     }
 
     return data;

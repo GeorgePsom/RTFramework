@@ -6,6 +6,8 @@ using namespace DirectX;
 
 using Microsoft::WRL::ComPtr;
 
+class Camera;
+
 class Game : public DXSample
 {
 public:
@@ -19,8 +21,8 @@ public:
 
 private:
 	static const UINT FrameCount = 2;
-	static const UINT TextureWidth = 256;
-	static const UINT TextureHeight = 256;
+	UINT TextureWidth;
+	UINT TextureHeight;
 	static const UINT TexturePixelSize = 4;
 
 	struct Vertex
@@ -48,6 +50,8 @@ private:
 	ComPtr<ID3D12Resource> m_vertexBuffer;
 	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
 	ComPtr<ID3D12Resource> m_texture;
+
+	Camera m_camera;
 
 
 	// Synchronization Objects

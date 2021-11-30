@@ -12,7 +12,13 @@
 #include "d3dx12.h"
 
 #include <string>
+#include <iostream>
 #include <vector>
 #include <wrl.h>
 #include <shellapi.h>
+
+#include "Camera.h"
+#include "Ray.h"
+#include "Sphere.h"
+
 
