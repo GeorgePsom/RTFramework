@@ -12,13 +12,22 @@
 #include "d3dx12.h"
 
 #include <string>
+#include <sstream>
+#include <iomanip>
+#include <omp.h>
 #include <iostream>
 #include <vector>
+#include <memory>
 #include <wrl.h>
 #include <shellapi.h>
 
+#include "StepTimer.h"
 #include "Camera.h"
 #include "Ray.h"
+#include "Intersectable.h"
+#include "Material.h"
+
 #include "Sphere.h"
+
 
 

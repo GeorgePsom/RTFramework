@@ -10,9 +10,16 @@ Game::Game(UINT width, UINT height, std::wstring name) :
     m_scissorRect(0, 0, static_cast<LONG>(width), static_cast<LONG>(height)),
     m_rtvDescriptorSize(0),
     TextureWidth(width),
-    TextureHeight(height),
-    m_camera(Camera(XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.0f, 0.0f, 1.0f), 45.0f, 2.0f, 1.0f))
+    TextureHeight(height)
+
 {
+    float aspect = static_cast<float>(width) / static_cast<float>(height);
+    XMFLOAT3 origin(0.0f, 0.0f, -2.0f);
+    XMFLOAT3 lookAt(0.0f, 0.0f, 0.0f);
+    XMFLOAT3 up(0.0f, 1.0f, 0.0f);
+    m_camera = new Camera(XMLoadFloat3(&origin), XMLoadFloat3(&lookAt),
+        XMLoadFloat3(&up), 90.0f, aspect, 0.1f, 1.0f);
+
 }
 
 void Game::OnInit()
@@ -151,7 +158,7 @@ void Game::LoadAssets()
         }
 
         CD3DX12_DESCRIPTOR_RANGE1 ranges[1];
-        ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+        ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_NONE);
 
         CD3DX12_ROOT_PARAMETER1 rootParameters[1];
         rootParameters[0].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
@@ -271,7 +278,7 @@ void Game::LoadAssets()
     // the command list that references it has finished executing on the GPU.
     // We will flush the GPU at the end of this method to ensure the resource is not
     // prematurely destroyed.
-    ComPtr<ID3D12Resource> textureUploadHeap;
+    
 
     // Create the texture.
     {
@@ -304,20 +311,9 @@ void Game::LoadAssets()
             &CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize),
             D3D12_RESOURCE_STATE_GENERIC_READ,
             nullptr,
-            IID_PPV_ARGS(&textureUploadHeap)));
+            IID_PPV_ARGS(&m_textureUploadHeap)));
 
-        // Copy data to the intermediate upload heap and then schedule a copy 
-        // from the upload heap to the Texture2D.
-        std::vector<UINT8> texture = GenerateTextureData();
-
-        D3D12_SUBRESOURCE_DATA textureData = {};
-        textureData.pData = &texture[0];
-        textureData.RowPitch = TextureWidth * TexturePixelSize;
-        textureData.SlicePitch = textureData.RowPitch * TextureHeight;
-
-        UpdateSubresources(m_commandList.Get(), m_texture.Get(), textureUploadHeap.Get(), 0, 0, 1, &textureData);
-        m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_texture.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
-
+       
         // Describe and create a SRV for the texture.
         D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
         srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
@@ -344,6 +340,28 @@ void Game::LoadAssets()
             ThrowIfFailed(HRESULT_FROM_WIN32(GetLastError()));
         }
 
+        m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
+            XMFLOAT3(0.0f, 0.0f, 0.0f), 0.25f, Material(Material::Type::DIFFUSE, XMFLOAT3(1.0f,0.0f, 0.0f))
+        )));
+
+        m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
+            XMFLOAT3(3.0f, 2.0f, 5.0f), 3.5f, Material(Material::Type::DIFFUSE, XMFLOAT3(1.0f,0.0f, 0.0f))
+        )));
+
+        m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
+            XMFLOAT3(-2.0f, 1.0f, 2.0f), 0.5f, Material(Material::Type::DIFFUSE, XMFLOAT3(1.0f, 0.0f, 1.0f)))));
+        m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
+            XMFLOAT3(-1.0f, 1.0f, 1.0f), 0.5f, Material(Material::Type::DIFFUSE, XMFLOAT3(0.0f, 0.0f, 1.0f))
+        )));
+        m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
+            XMFLOAT3(-2.0f, 2.0f, 0.0f), 0.5f, Material(Material::Type::DIFFUSE, XMFLOAT3(1.0f, 0.5f, 0.0f))
+        )));
+        m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
+            XMFLOAT3(0.0f, -1.0f, 2.0f), 0.5f, Material(Material::Type::DIFFUSE, XMFLOAT3(1.0f, 0.0f, 0.5f))
+        )));
+        const UINT rowPitch = TextureWidth * TexturePixelSize;
+        const UINT textureSize = rowPitch * TextureHeight;
+        m_rtOutput = std::vector<UINT8>(textureSize);
         // Wait for the command list to execute; we are reusing the same command 
         // list in our main loop but for now, we just want to wait for setup to 
         // complete before continuing.
@@ -352,56 +370,113 @@ void Game::LoadAssets()
 }
 
 // Generate a simple black and white checkerboard texture.
-std::vector<UINT8> Game::GenerateTextureData()
+void Game::GenerateTextureData()
 {
     const UINT rowPitch = TextureWidth * TexturePixelSize;
     const UINT textureSize = rowPitch * TextureHeight;
 
-    std::vector<UINT8> data(textureSize);
-    UINT8* pData = &data[0];
-    float imageAspectRatio = (float)TextureWidth / (float)TextureHeight;
-    float viewport_height = 2.0f;
-    float viewport_width = imageAspectRatio * viewport_height;
-    Sphere sphere(XMFLOAT3(0.0f, 0.0f, -5.0f), 0.5f);
-    for (UINT j = 0; j < TextureHeight; j++)
-    {
-        for (UINT i = 0; i < TextureWidth; i++)
-        {         
-            UINT n = rowPitch * j + i * TexturePixelSize; 
-            float u = float(i) / (static_cast<float>(TextureWidth) - 1.0f);
-            float v = 1.0f - float(j) / (static_cast<float>(TextureHeight) -1.0f);
-            XMFLOAT3 directionf;
-            XMVECTOR P = XMLoadFloat3(&m_camera.P0) + u * XMVectorSubtract(XMLoadFloat3(&m_camera.P1), XMLoadFloat3(&m_camera.P0))
-                + v * XMVectorSubtract(XMLoadFloat3(&m_camera.P2), XMLoadFloat3(&m_camera.P0));
-            XMVECTOR direction = XMVectorSubtract(P, XMLoadFloat3(&m_camera.position));
-            direction = XMVector3Normalize(direction);
-            XMStoreFloat3(&directionf, direction);
-          
-            Ray ray(m_camera.position, directionf, 0.0f);
-            UINT8 R = 0;
-            UINT8 G = 0;
-            UINT8 B = 0;
-            if (sphere.Intersect(ray))
-            {
-                R = 255;
-            }
+   
+    UINT8* pData = &m_rtOutput[0];
+   
+omp_set_num_threads(omp_get_max_threads());
+#pragma omp parallel for schedule(dynamic, 50) num_threads(omp_get_max_threads())
+for (INT p = 0; p < TextureWidth * TextureHeight; p++)
+    {   
+        UINT i = (UINT)p / TextureHeight;
+        UINT j = (UINT)p - i * TextureHeight;
+        UINT n = rowPitch * j + i * TexturePixelSize; 
+        float u = float(i) / (static_cast<float>(TextureWidth) - 1.0f);
+        float v = float(j) / (static_cast<float>(TextureHeight) -1.0f);
             
-          
+        Ray ray = m_camera->GetRayDirection(u, v);
+        XMFLOAT3 color(0.0f, 0.0f, 0.0f);
+        color = ClosestHitShade(ray);
 
-            pData[n] = R;
-            pData[n + 1] = G;
-            pData[n + 2] = B;
-            pData[n + 3] = 255;
-        }
-
+            
+        pData[n] = color.x * 255.0f;
+        pData[n + 1] = color.y * 255.0f;
+        pData[n + 2] = color.z * 255.0f;
+        pData[n + 3] = 255;
     }
 
-    return data;
+    
+
+   
 }
 
+
+bool Game::Trace(Ray& ray,const Intersectable*& object)
+{
+    float closestHit = 1000000.0f;
+    
+    for (int i = 0; i < m_geometry.size(); i++)
+    {
+        if (m_geometry[i]->Intersect(ray) && ray.t < closestHit)
+        {
+            object = m_geometry[i].get();
+            closestHit = ray.t;
+        }
+        
+    }
+    ray.t = closestHit;
+    return (object != nullptr);
+}
+
+XMFLOAT3 Game::ClosestHitShade(Ray& ray)
+{
+    XMFLOAT3 color(0.0f, 0.0f, 0.0f);
+    const Intersectable* object = nullptr;
+    if (Trace(ray, object))
+    {
+       
+        Surface surf;
+        object->GetSurfaceData(surf, ray);
+        color = object->mat.Shade(surf, ray);
+    }
+    return color;
+}
 // Update frame-based values.
 void Game::OnUpdate()
 {
+    m_timer.Tick();
+    CalculateFrameStats();
+    ThrowIfFailed(m_commandAllocator->Reset());
+    ThrowIfFailed(m_commandList->Reset(m_commandAllocator.Get(), m_pipelineState.Get()));
+   
+    GenerateTextureData();
+   
+    D3D12_SUBRESOURCE_DATA textureData = {};
+    textureData.pData = &m_rtOutput[0];
+    textureData.RowPitch = TextureWidth * TexturePixelSize;
+    textureData.SlicePitch = textureData.RowPitch * TextureHeight;
+
+    UpdateSubresources(m_commandList.Get(), m_texture.Get(), m_textureUploadHeap.Get(), 0, 0, 1, &textureData);
+    m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_texture.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
+
+}
+void Game::CalculateFrameStats()
+{
+    static int frameCnt = 0;
+    static double prevTime = 0.0f;
+    double totalTime = m_timer.GetTotalSeconds();
+
+    frameCnt++;
+
+    // Compute averages over one second period.
+    if ((totalTime - prevTime) >= 1.0f)
+    {
+        float diff = static_cast<float>(totalTime - prevTime);
+        float fps = static_cast<float>(frameCnt) / diff; // Normalize to an exact second.
+
+        frameCnt = 0;
+        prevTime = totalTime;
+        
+
+        std::wstringstream windowText;
+        windowText << std::setprecision(2) << std::fixed
+            << L"    fps: " << fps;
+        SetCustomWindowText(windowText.str().c_str());
+    }
 }
 
 // Render the scene.
@@ -415,7 +490,7 @@ void Game::OnRender()
     m_commandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
     // Present the frame.
-    ThrowIfFailed(m_swapChain->Present(1, 0));
+    ThrowIfFailed(m_swapChain->Present(0, 0));
 
     WaitForPreviousFrame();
 }
@@ -431,15 +506,7 @@ void Game::OnDestroy()
 
 void Game::PopulateCommandList()
 {
-    // Command list allocators can only be reset when the associated 
-    // command lists have finished execution on the GPU; apps should use 
-    // fences to determine GPU execution progress.
-    ThrowIfFailed(m_commandAllocator->Reset());
-
-    // However, when ExecuteCommandList() is called on a particular command 
-    // list, that command list can then be reset at any time and must be before 
-    // re-recording.
-    ThrowIfFailed(m_commandList->Reset(m_commandAllocator.Get(), m_pipelineState.Get()));
+    
 
     // Set necessary state.
     m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
@@ -466,6 +533,7 @@ void Game::PopulateCommandList()
 
     // Indicate that the back buffer will now be used to present.
     m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
+    m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_texture.Get(), D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_COPY_DEST));
 
     ThrowIfFailed(m_commandList->Close());
 }

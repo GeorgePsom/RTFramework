@@ -41,6 +41,7 @@ private:
 	ComPtr<ID3D12CommandQueue> m_commandQueue;
 	ComPtr<ID3D12RootSignature> m_rootSignature;
 	ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
+	ComPtr<ID3D12Resource> m_textureUploadHeap;
 	ComPtr<ID3D12DescriptorHeap> m_srvHeap;
 	ComPtr<ID3D12PipelineState> m_pipelineState;
 	ComPtr<ID3D12GraphicsCommandList> m_commandList;
@@ -51,7 +52,10 @@ private:
 	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
 	ComPtr<ID3D12Resource> m_texture;
 
-	Camera m_camera;
+	Camera* m_camera;
+	StepTimer m_timer;
+	std::vector<std::unique_ptr<Intersectable>> m_geometry;
+	std::vector<UINT8> m_rtOutput;
 
 
 	// Synchronization Objects
@@ -62,7 +66,11 @@ private:
 
 	void LoadPipeline();
 	void LoadAssets();
-	std::vector<UINT8> GenerateTextureData();
+	void GenerateTextureData();
+	bool Trace(Ray& ray, const Intersectable*& object);
+	XMFLOAT3 ClosestHitShade(Ray& ray);
+
+	void CalculateFrameStats();
 	void PopulateCommandList();
 	void WaitForPreviousFrame();
 

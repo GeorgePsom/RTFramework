@@ -6,7 +6,8 @@ class Ray
 {
 public:
 	
-	Ray(const XMFLOAT3& o, const XMFLOAT3& d, float t);
+	Ray( XMFLOAT3& o,  XMFLOAT3& d, float t);
+	Ray();
 	~Ray();
 
 public:

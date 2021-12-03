@@ -2,19 +2,22 @@
 
 
 using namespace DirectX;
+class Ray;
 
 class Camera
 {
 public:
-	Camera(const XMFLOAT3& position, const XMFLOAT3& view, float FOV, float width, float height);
+	Camera(XMVECTOR origin, XMVECTOR viewVector, XMVECTOR upVector, float FOV, float aspect, float aperture, float focal_distance);
 	~Camera();
+	Ray GetRayDirection(float u, float v);
 	
 
 public:
 	XMFLOAT3 position;
 	XMFLOAT3 viewDirection;
 	float focal_length;
-	XMFLOAT3 P0, P1, P2;
+	XMFLOAT3 lower_left_corner;
+	XMFLOAT3 horizontal, vertical;
 	float FOV;
 	float width, height;
 };
