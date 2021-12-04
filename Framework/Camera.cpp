@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "Ray.h"
+//#include "Ray.h"
 
 
 

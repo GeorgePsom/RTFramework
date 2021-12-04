@@ -341,23 +341,23 @@ void Game::LoadAssets()
         }
 
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(0.0f, 0.0f, 0.0f), 0.25f, Material(Material::Type::DIFFUSE, XMFLOAT3(1.0f,0.0f, 0.0f))
+            XMFLOAT3(0.0f, 0.0f, 0.0f), 0.25f, Material(Material::Type::LAMBERTIAN, XMFLOAT3(1.0f,0.0f, 0.0f))
         )));
 
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(3.0f, 2.0f, 5.0f), 3.5f, Material(Material::Type::DIFFUSE, XMFLOAT3(1.0f,0.0f, 0.0f))
+            XMFLOAT3(3.0f, 2.0f, 5.0f), 3.5f, Material(Material::Type::LAMBERTIAN, XMFLOAT3(1.0f,0.0f, 0.0f))
         )));
 
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(-2.0f, 1.0f, 2.0f), 0.5f, Material(Material::Type::DIFFUSE, XMFLOAT3(1.0f, 0.0f, 1.0f)))));
+            XMFLOAT3(-2.0f, 1.0f, 2.0f), 0.5f, Material(Material::Type::LAMBERTIAN, XMFLOAT3(1.0f, 0.0f, 1.0f)))));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(-1.0f, 1.0f, 1.0f), 0.5f, Material(Material::Type::DIFFUSE, XMFLOAT3(0.0f, 0.0f, 1.0f))
+            XMFLOAT3(-1.0f, 1.0f, 1.0f), 0.5f, Material(Material::Type::SPECULAR, XMFLOAT3(0.0f, 0.0f, 1.0f))
         )));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(-2.0f, 2.0f, 0.0f), 0.5f, Material(Material::Type::DIFFUSE, XMFLOAT3(1.0f, 0.5f, 0.0f))
+            XMFLOAT3(-2.0f, 2.0f, 0.0f), 0.5f, Material(Material::Type::LAMBERTIAN, XMFLOAT3(1.0f, 0.5f, 0.0f))
         )));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(0.0f, -1.0f, 2.0f), 0.5f, Material(Material::Type::DIFFUSE, XMFLOAT3(1.0f, 0.0f, 0.5f))
+            XMFLOAT3(0.0f, -1.0f, 2.0f), 0.5f, Material(Material::Type::LAMBERTIAN, XMFLOAT3(1.0f, 0.0f, 0.5f))
         )));
         const UINT rowPitch = TextureWidth * TexturePixelSize;
         const UINT textureSize = rowPitch * TextureHeight;
@@ -431,7 +431,20 @@ XMFLOAT3 Game::ClosestHitShade(Ray& ray)
        
         Surface surf;
         object->GetSurfaceData(surf, ray);
-        color = object->mat.Shade(surf, ray);
+        /*color = object->mat.Shade(surf, ray);*/
+        if (object->mat.type == Material::Type::LAMBERTIAN)
+            color = object->mat.LambertShade(surf);
+        else if (object->mat.type == Material::Type::SPECULAR)
+        {
+            ray.ReflectRay(surf);
+            if (ray.depth < 5)
+                color = ClosestHitShade(ray);
+            else
+                color = XMFLOAT3(0.0f, 0.0f, 0.0f);
+        }
+        else
+            color = XMFLOAT3(0.0f, 0.0f, 0.0f);
+            
     }
     return color;
 }

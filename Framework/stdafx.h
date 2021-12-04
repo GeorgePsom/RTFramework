@@ -23,6 +23,7 @@
 
 #include "StepTimer.h"
 #include "Camera.h"
+#include "Surface.h"
 #include "Ray.h"
 #include "Intersectable.h"
 #include "Material.h"
