@@ -18,6 +18,12 @@ public:
 	virtual void OnUpdate();
 	virtual void OnRender();
 	virtual void OnDestroy();
+	virtual void OnKeyDown(UINT8 key);
+	virtual void OnKeyUp(UINT8 key);
+	virtual void OnMouseMove(UINT x, UINT y);
+	virtual void OnMouseUp();
+	virtual void OnMouseDown();
+
 
 private:
 	static const UINT FrameCount = 2;
@@ -53,7 +59,12 @@ private:
 	ComPtr<ID3D12Resource> m_texture;
 
 	Camera* m_camera;
+	XMFLOAT3 m_cameraMovementX, m_cameraMovementZ;
+	UINT m_Xprev, m_Yprev;
+	float m_AngleX, m_AngleY;
+	bool m_firstClick;
 	StepTimer m_timer;
+	std::vector<Light> m_lights;
 	std::vector<std::unique_ptr<Intersectable>> m_geometry;
 	std::vector<UINT8> m_rtOutput;
 
@@ -69,6 +80,7 @@ private:
 	void GenerateTextureData();
 	bool Trace(Ray& ray, const Intersectable*& object);
 	XMFLOAT3 ClosestHitShade(Ray& ray);
+	bool AnyHit(Ray& ray);
 
 	void CalculateFrameStats();
 	void PopulateCommandList();

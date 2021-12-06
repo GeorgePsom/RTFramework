@@ -27,6 +27,7 @@
 #include "Ray.h"
 #include "Intersectable.h"
 #include "Material.h"
+#include "Light.h"
 
 #include "Sphere.h"
 

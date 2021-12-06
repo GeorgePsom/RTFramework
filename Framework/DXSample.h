@@ -17,10 +17,13 @@ public:
 
 	virtual void OnKeyDown(UINT8) {}
 	virtual void OnKeyUp(UINT8) {}
+	virtual void OnMouseMove(UINT x, UINT y){}
+	virtual void OnMouseUp() {}
+	virtual void OnMouseDown() {}
 
 	UINT GetWidth() const {return m_width;}
 	UINT GetHeight() const{ return m_height; }
-	const WCHAR* GetTitle() const { return m_title.c_str(); }
+	const std::wstring GetTitle() const { return m_title; }
 
 	void ParseCommandLineArgs(_In_reads_(argc) WCHAR* argv[], int argc);
 
@@ -41,7 +44,6 @@ protected:
 
 	// Adapter Info
 	bool m_useWarpDevice;
-
 private:
 	//Root assets path
 	std::wstring m_assetsPath;

@@ -5,13 +5,16 @@ class Material
 {
 public :
 
-	enum class Type { LAMBERTIAN, SPECULAR, DIELECTRICS_TRANSPARENT, DIELECTRICS_SOLID };
+	enum class Type { DIFFUSE, SPECULAR, DIELECTRIC };
 	Material(Type t, XMFLOAT3 c) :
 		type(t), color(c)
 	{};
-	Material() : type(Type::LAMBERTIAN), color(XMFLOAT3(1.0f, 0.0f, 0.0f)){}
+	Material() : type(Type::DIFFUSE), color(XMFLOAT3(1.0f, 0.0f, 0.0f)){}
+	Material(Type t, XMFLOAT3 c, float i) : type(t), color(c), IOR(i), I_IOR(1.0f / i) {};
 	~Material() {};
 	XMFLOAT3 color;
+	float IOR;
+	float I_IOR;
 	Type type;
 
 	XMFLOAT3 LambertShade(Surface& surf) const

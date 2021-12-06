@@ -19,7 +19,11 @@ Game::Game(UINT width, UINT height, std::wstring name) :
     XMFLOAT3 up(0.0f, 1.0f, 0.0f);
     m_camera = new Camera(XMLoadFloat3(&origin), XMLoadFloat3(&lookAt),
         XMLoadFloat3(&up), 90.0f, aspect, 0.1f, 1.0f);
-
+    m_Xprev = static_cast<float>(width) / 2.0f;
+    m_Yprev = static_cast<float>(height) / 2.0f;
+    m_firstClick = true;
+    m_cameraMovementX = XMFLOAT3(0.0f, 0.0f, 0.0f);
+    m_cameraMovementZ = XMFLOAT3(0.0f, 0.0f, 0.0f);
 }
 
 void Game::OnInit()
@@ -341,24 +345,28 @@ void Game::LoadAssets()
         }
 
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(0.0f, 0.0f, 0.0f), 0.25f, Material(Material::Type::LAMBERTIAN, XMFLOAT3(1.0f,0.0f, 0.0f))
+            XMFLOAT3(2.0f, 2.0f, -3.0f), 0.25f, Material(Material::Type::DIFFUSE, XMFLOAT3(1.0f,0.0f, 0.0f))
         )));
 
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(3.0f, 2.0f, 5.0f), 3.5f, Material(Material::Type::LAMBERTIAN, XMFLOAT3(1.0f,0.0f, 0.0f))
+            XMFLOAT3(-1.0f, 2.0f, -3.0f), 0.25f, Material(Material::Type::DIFFUSE, XMFLOAT3(1.0f,0.0f, 0.0f))
         )));
 
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(-2.0f, 1.0f, 2.0f), 0.5f, Material(Material::Type::LAMBERTIAN, XMFLOAT3(1.0f, 0.0f, 1.0f)))));
+            XMFLOAT3(0.0f, 1.0f, 3.0f), 0.5f, Material(Material::Type::DIFFUSE, XMFLOAT3(1.0f, 0.0f, 1.0f)))));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(-1.0f, 1.0f, 1.0f), 0.5f, Material(Material::Type::SPECULAR, XMFLOAT3(0.0f, 0.0f, 1.0f))
+            XMFLOAT3(0.0f, 0.0f, 0.0f), 1.0f, Material(Material::Type::DIELECTRIC, XMFLOAT3(0.6f, 0.8f, 0.7f), 2.52f)
         )));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(-2.0f, 2.0f, 0.0f), 0.5f, Material(Material::Type::LAMBERTIAN, XMFLOAT3(1.0f, 0.5f, 0.0f))
+            XMFLOAT3(0.0f, 0.0f, -3.0f), 0.5f, Material(Material::Type::DIFFUSE, XMFLOAT3(1.0f, 0.5f, 0.0f))
         )));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(0.0f, -1.0f, 2.0f), 0.5f, Material(Material::Type::LAMBERTIAN, XMFLOAT3(1.0f, 0.0f, 0.5f))
+            XMFLOAT3(0.0f, 3.0f, -4.0f), 0.5f, Material(Material::Type::DIFFUSE, XMFLOAT3(1.0f, 0.0f, 0.5f))
         )));
+
+        m_lights.push_back(Light(XMFLOAT3(0.0f, 1.5f, 0.0f), XMFLOAT3(1.0f, 0.7f, 0.9f), 4.0f, Light::Type::POINT));
+        m_lights.push_back(Light(XMFLOAT3(0.0f, 0.0f, 5.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 60.0f, Light::Type::POINT));
+
         const UINT rowPitch = TextureWidth * TexturePixelSize;
         const UINT textureSize = rowPitch * TextureHeight;
         m_rtOutput = std::vector<UINT8>(textureSize);
@@ -393,9 +401,9 @@ for (INT p = 0; p < TextureWidth * TextureHeight; p++)
         color = ClosestHitShade(ray);
 
             
-        pData[n] = color.x * 255.0f;
-        pData[n + 1] = color.y * 255.0f;
-        pData[n + 2] = color.z * 255.0f;
+        pData[n] = min(1.0f ,color.x) * 255.0f;
+        pData[n + 1] = min(1.0f, color.y) * 255.0f;
+        pData[n + 2] = min(1.0f, color.z) * 255.0f;
         pData[n + 3] = 255;
     }
 
@@ -411,7 +419,7 @@ bool Game::Trace(Ray& ray,const Intersectable*& object)
     
     for (int i = 0; i < m_geometry.size(); i++)
     {
-        if (m_geometry[i]->Intersect(ray) && ray.t < closestHit)
+        if (m_geometry[i]->Intersect(ray) && ray.t < closestHit && ray.t > ray.tMin && ray.t <= ray.tMax)
         {
             object = m_geometry[i].get();
             closestHit = ray.t;
@@ -424,7 +432,7 @@ bool Game::Trace(Ray& ray,const Intersectable*& object)
 
 XMFLOAT3 Game::ClosestHitShade(Ray& ray)
 {
-    XMFLOAT3 color(0.0f, 0.0f, 0.0f);
+    XMFLOAT3 color(0.6, 1.0f, 1.0f);
     const Intersectable* object = nullptr;
     if (Trace(ray, object))
     {
@@ -432,27 +440,130 @@ XMFLOAT3 Game::ClosestHitShade(Ray& ray)
         Surface surf;
         object->GetSurfaceData(surf, ray);
         /*color = object->mat.Shade(surf, ray);*/
-        if (object->mat.type == Material::Type::LAMBERTIAN)
-            color = object->mat.LambertShade(surf);
+        if (object->mat.type == Material::Type::DIFFUSE)
+        {
+            XMVECTOR colorV = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+            for (int i = 0; i < m_lights.size(); i++)
+            {
+
+                Light light = m_lights[i];
+                XMVECTOR L = XMLoadFloat3(&light.position) - XMLoadFloat3(&surf.position);
+                float distance = XMVectorGetX(XMVector3Length(L));
+                L = XMVector3Normalize(L);
+                XMFLOAT3 Lf;
+                XMStoreFloat3(&Lf, L);
+                Ray shadowRay(surf.position, Lf, Ray::EPSILON, 0, distance, Ray::EPSILON);
+                float shadowAttenuation = AnyHit(shadowRay) ? 0.0f : 1.0f;
+                colorV += XMLoadFloat3(&object->mat.color) * XMLoadFloat3(&light.color) * light.intensity *
+                    light.CosineAttenuation(surf.position, surf.normal) * shadowAttenuation * light.Attenuate(surf.position);
+                XMStoreFloat3(&color, colorV);
+            }
+        }
+            
+            
         else if (object->mat.type == Material::Type::SPECULAR)
         {
             ray.ReflectRay(surf);
             if (ray.depth < 5)
+            {
                 color = ClosestHitShade(ray);
-            else
-                color = XMFLOAT3(0.0f, 0.0f, 0.0f);
+                XMVECTOR finalColor = XMLoadFloat3(&color) * XMLoadFloat3(&object->mat.color);
+                XMStoreFloat3(&color, finalColor);
+            }
+           
         }
-        else
-            color = XMFLOAT3(0.0f, 0.0f, 0.0f);
+        else if (object->mat.type == Material::Type::DIELECTRIC)
+        {
+            float ior = object->mat.I_IOR;
+            float n1 = 1.0f;
+            float n2 = object->mat.IOR;
+            float cosThetaI = XMVectorGetX(XMVector3Dot(XMLoadFloat3(&surf.normal), -XMLoadFloat3(&ray.direction)));
+            if (cosThetaI < 0)
+            {
+                // We are inside the object reverse the normal and IOR
+                ior = object->mat.IOR;
+                n1 = object->mat.IOR;
+                n2 = 1.0f;
+                XMStoreFloat3(&surf.normal, -XMLoadFloat3(&surf.normal));
+                cosThetaI = XMVectorGetX(XMVector3Dot(XMLoadFloat3(&surf.normal), -XMLoadFloat3(&ray.direction)));
+            }
+            float ior2 = ior * ior;
+            float cosThetaI2 = cosThetaI * cosThetaI;
+            float k = 1.0f - ior2 * (1 - cosThetaI2);
+            XMVECTOR finalColor = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+            if (k < 0)
+            {
+                // Just reflect
+                Ray reflRay = ray;
+                reflRay.ReflectRay(surf);
+                if (reflRay.depth < 10)
+                {
+                    color = ClosestHitShade(reflRay);
+                    finalColor += XMLoadFloat3(&color) * XMLoadFloat3(&object->mat.color);
+                    XMStoreFloat3(&color, finalColor);
+                }
+            }
+            else
+            {
+                float cosThetaCrit = sqrt(1.0f - ior2 * cosThetaI2);
+                float num1 = n1 * cosThetaI - n2 * cosThetaCrit;
+                float num2 = n1 * cosThetaCrit - n2 * cosThetaI;
+                float denom1 = n1 * cosThetaI + n2 * cosThetaCrit;
+                float denom2 = n1 * cosThetaCrit + n2 * cosThetaI;
+                float num12 = num1 * num1;
+                float num22 = num2 * num2;
+                float denom12 = denom1 * denom1;
+                float denom22 = denom2 * denom2;
+                float Fr = 0.5f * (num12 / denom12 + num22 / denom22);
+                float Ft = 1.0f - Fr;
+                Ray reflRay = ray;
+                reflRay.ReflectRay(surf);
+                if (reflRay.depth < 5)
+                {
+                    color = ClosestHitShade(reflRay);
+                    finalColor += Fr * XMLoadFloat3(&color) * XMLoadFloat3(&object->mat.color);
+                    XMStoreFloat3(&color, finalColor);
+                }
+                Ray refrRay = ray;
+                refrRay.RefractRay(surf, cosThetaI, ior, k);
+                if (refrRay.depth < 5)
+                {
+                    color = ClosestHitShade(refrRay);
+                    finalColor += Ft * XMLoadFloat3(&color) /** XMLoadFloat3(&object->mat.color)*/;
+                    XMStoreFloat3(&color, finalColor);
+                }
+
+
+            }
+           
+        }
+       
             
     }
     return color;
+}
+
+bool Game::AnyHit(Ray& ray)
+{
+    for (int i = 0; i < m_geometry.size(); i++)
+    {
+        if (m_geometry[i]->Intersect(ray) && ray.t > ray.tMin && ray.t <= ray.tMax)
+        {
+            return true;
+        }
+
+    }
+    return false;
+    
+
 }
 // Update frame-based values.
 void Game::OnUpdate()
 {
     m_timer.Tick();
     CalculateFrameStats();
+    float delta = static_cast<float>(m_timer.GetElapsedSeconds());
+    m_camera->MoveCamera(XMLoadFloat3(&m_cameraMovementX), XMLoadFloat3 (&m_cameraMovementZ), delta);
     ThrowIfFailed(m_commandAllocator->Reset());
     ThrowIfFailed(m_commandList->Reset(m_commandAllocator.Get(), m_pipelineState.Get()));
    
@@ -515,6 +626,72 @@ void Game::OnDestroy()
     WaitForPreviousFrame();
 
     CloseHandle(m_fenceEvent);
+}
+
+void Game::OnKeyDown(UINT8 key)
+{
+    switch (key)
+    {
+    case 'W':
+        XMStoreFloat3(&m_cameraMovementZ, -XMLoadFloat3(&m_camera->viewDirection));
+        break;
+    case 'S' :
+        XMStoreFloat3(&m_cameraMovementZ, XMLoadFloat3(&m_camera->viewDirection));
+        break;
+    case 'A':
+        XMStoreFloat3(&m_cameraMovementX, -m_camera->right);
+        break;
+    case 'D':
+        XMStoreFloat3(&m_cameraMovementX, m_camera->right);
+        break;
+    }
+}
+
+
+
+void Game::OnKeyUp(UINT8 key)
+{
+    switch (key)
+    {
+    case 'W':
+        m_cameraMovementZ = XMFLOAT3(0.0f, 0.0f, 0.0f);
+        break;
+    case 'S':
+        m_cameraMovementZ = XMFLOAT3(0.0f, 0.0f, 0.0f);
+        break;
+    case 'A':
+        m_cameraMovementX = XMFLOAT3(0.0f, 0.0f, 0.0f);
+        break;
+    case 'D':
+        m_cameraMovementX = XMFLOAT3(0.0f, 0.0f, 0.0f);
+        break;
+    }
+}
+
+void Game::OnMouseMove(UINT x, UINT y)
+{
+    if (m_firstClick)
+    {
+        m_Xprev = (float)x;
+        m_Yprev = (float)y;
+        m_firstClick = false;
+    }
+    float xOffset = m_Xprev - (float)x;
+    float yOffset = (float)y - m_Yprev;
+    m_Xprev = (float)x;
+    m_Yprev = (float)y;
+    m_camera->RotateCamera(xOffset, yOffset);
+}
+
+void Game::OnMouseUp()
+{
+    ReleaseCapture();
+    m_firstClick = true;
+}
+
+void Game::OnMouseDown()
+{
+    SetCapture(Win32Application::GetHwnd());
 }
 
 void Game::PopulateCommandList()

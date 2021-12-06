@@ -27,7 +27,7 @@ int Win32Application::Run(DXSample* pSample, HINSTANCE hInstance, int nCmdShow)
 	// Create the window and store a handle to it
 	m_hwnd = CreateWindow(
 		windowClass.lpszClassName,
-		pSample->GetTitle(),
+		pSample->GetTitle().c_str(),
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
@@ -63,6 +63,32 @@ int Win32Application::Run(DXSample* pSample, HINSTANCE hInstance, int nCmdShow)
 
 }
 
+void Win32Application::CalculateFrameStats(DXSample* pSample)
+{
+    static int frameCnt = 0;
+    static double prevTime = 0.0f;
+    double totalTime = m_timer.GetTotalSeconds();
+
+    frameCnt++;
+
+    // Compute averages over one second period.
+    if ((totalTime - prevTime) >= 1.0f)
+    {
+        float diff = static_cast<float>(totalTime - prevTime);
+        float fps = static_cast<float>(frameCnt) / diff; // Normalize to an exact second.
+
+        frameCnt = 0;
+        prevTime = totalTime;
+        
+
+        std::wstringstream windowText;
+        windowText << std::setprecision(2) << std::fixed
+            << L"    fps: " << fps;
+		std::wstring windowTextWS = pSample->GetTitle() + L": " + windowText.str().c_str();
+		SetWindowText(Win32Application::GetHwnd(), windowTextWS.c_str());
+    }
+}
+
 LRESULT CALLBACK Win32Application::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	DXSample* pSample = reinterpret_cast<DXSample*> (GetWindowLongPtr(hWnd, GWLP_USERDATA));
@@ -87,11 +113,37 @@ LRESULT CALLBACK Win32Application::WindowProc(HWND hWnd, UINT message, WPARAM wP
 				pSample->OnKeyUp(static_cast<UINT8>(wParam));
 			return 0;
 
+		
 		case WM_PAINT:
 			if (pSample)
 			{
+				
 				pSample->OnUpdate();
 				pSample->OnRender();
+			}
+			return 0;
+
+		case WM_LBUTTONDOWN:
+			if (pSample)
+			{
+				pSample->OnMouseDown();
+
+			}
+			return 0;
+		case WM_LBUTTONUP:
+			if (pSample)
+			{
+				pSample->OnMouseUp();
+
+			}
+			return 0;
+
+		case WM_MOUSEMOVE:
+			if (pSample && static_cast<UINT8>(wParam) == MK_LBUTTON)
+			{
+				UINT x = LOWORD(lParam);
+				UINT y = HIWORD(lParam);
+				pSample->OnMouseMove(x, y);
 			}
 			return 0;
 
@@ -100,6 +152,8 @@ LRESULT CALLBACK Win32Application::WindowProc(HWND hWnd, UINT message, WPARAM wP
 			return 0;
 		
 	}
+
+
 
 	// Handle any messages the switch statement did not
 	return DefWindowProc(hWnd, message, wParam, lParam);
