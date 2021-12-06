@@ -11,7 +11,7 @@ public:
 	~Ray();
 
 	void ReflectRay(Surface& surf);
-	void RefractRay(Surface& surf, float cosThetaI, float IOR, float k);
+	void RefractRay(Surface& surf, float cosThetaI, float IOR, float k, bool front);
 
 public:
     static float EPSILON;

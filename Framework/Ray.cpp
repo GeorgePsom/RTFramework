@@ -28,18 +28,24 @@ void Ray::ReflectRay(Surface& surf)
 	/*R = XMVector3Reflect(-D, N);*/
 	XMStoreFloat3(&this->origin, XMLoadFloat3(&surf.position));
 	XMStoreFloat3(&this->direction, R);
-	this->t = EPSILON; // to avoid self-intersection due to floating precision error
+	// to avoid self-intersection due to floating precision error
 	tMin = EPSILON;
 	this->depth++;
 }
 
-void Ray::RefractRay(Surface& surf, float cosThetaI, float IOR, float k)
+void Ray::RefractRay(Surface& surf, float cosThetaI, float IOR, float k, bool front)
 {
-	XMVECTOR refractDir = XMVector3Normalize(IOR * XMLoadFloat3(&direction) + XMLoadFloat3(&surf.normal) * (IOR * cosThetaI - sqrt(k)));
+	/*XMVECTOR refractDir = XMVector3Normalize(IOR * XMLoadFloat3(&direction) + XMLoadFloat3(&surf.normal) * (IOR * cosThetaI - sqrt(k)));
 	XMStoreFloat3(&direction, refractDir);
 	XMVECTOR newOrigin = XMLoadFloat3(&surf.position);
+	XMStoreFloat3(&origin, newOrigin);*/
+	XMVECTOR N = front ? XMLoadFloat3(&surf.normal) : -XMLoadFloat3(&surf.normal);
+	XMVECTOR r_out_per = IOR * (XMLoadFloat3(&direction) + cosThetaI * N);
+	XMVECTOR r_out_parallel = -sqrtf(fabs(1.0 - XMVectorGetX(XMVector3LengthSq(r_out_per)))) * N;
+	XMStoreFloat3(&direction, r_out_per + r_out_parallel);
+	XMVECTOR newOrigin = XMLoadFloat3(&surf.position);
 	XMStoreFloat3(&origin, newOrigin);
-	t = EPSILON;
+	
 	tMin = EPSILON;
 	depth++;
 }
