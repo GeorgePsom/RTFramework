@@ -14,7 +14,7 @@ Game::Game(UINT width, UINT height, std::wstring name) :
 
 {
     float aspect = static_cast<float>(width) / static_cast<float>(height);
-    XMFLOAT3 origin(0.0f, 0.0f, 3.0f);
+    XMFLOAT3 origin(0.0f, 0.0f, -2.0f);
     XMFLOAT3 lookAt(0.0f, 0.0f, 0.0f);
     XMFLOAT3 up(0.0f, 1.0f, 0.0f);
     m_camera = new Camera(XMLoadFloat3(&origin), XMLoadFloat3(&lookAt),
@@ -355,8 +355,7 @@ void Game::LoadAssets()
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
             XMFLOAT3(-1.0f, 1.0f, 4.0f), 0.01f, Material(Material::Type::DIFFUSE, XMFLOAT3(255.0f / 255.0f, 215.0f / 255.0f, 0)))));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(0.0f, 0.0f, 0.0f), 1.0f, Material(Material::Type::DIELECTRIC, XMFLOAT3(0.85f, 0.9f, 1.0f), 1.3f)
-        )));
+            XMFLOAT3(0.0f, 0.0f, 0.0f), 1.0f, Material(Material::Type::DIELECTRIC, XMFLOAT3(0.85f, 0.9f, 1.0f), 1.3f, XMFLOAT3(0.2, 0.6, 0.6)))));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
             XMFLOAT3(-1.0f, -0.5f, -4.1f), 0.01f, Material(Material::Type::DIFFUSE, XMFLOAT3(50.0f / 255.0f, 205.0f / 255.0f, 50.0f / 255.0f))
         )));
@@ -516,34 +515,41 @@ XMFLOAT3 Game::ClosestHitShade(Ray& ray)
             
             float Ft = 1.0f - Fr;
           
-           
+            XMVECTOR reflectColor = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
             Ray reflRay = ray;
             reflRay.ReflectRay(surf);
             /*XMVECTOR origin = P +  Ray::EPSILON * N;
             XMStoreFloat3(&reflRay.origin, origin);*/
             color = ClosestHitShade(reflRay);
-            finalColor += Fr * XMLoadFloat3(&color) * matColor;
-            
-                
+            reflectColor += Fr * XMLoadFloat3(&color) * matColor;
+            if (inside) reflectColor = XMVectorMultiply(reflectColor, XMVectorExpE(-reflRay.t * XMLoadFloat3(&object->mat.extinction)));
+            XMVECTOR refractedColor = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
             if (Ft > 0)
-            {
+            { 
+               
                 Ray refrRay = ray;
                 refrRay.RefractRay(surf, cosThetaI, ior, k, !inside);
                 XMVECTOR origin = P - Ray::EPSILON * N;
                 XMStoreFloat3(&refrRay.origin, origin);
-
+                refrRay.t = 0.0f;
                 color = ClosestHitShade(refrRay);
-                finalColor += Ft * XMLoadFloat3(&color) * matColor;
-                XMStoreFloat3(&color, finalColor);
+                refractedColor += Ft * XMLoadFloat3(&color) * matColor;
+                float distance = refrRay.t;
+                if(!inside) refractedColor = XMVectorMultiply(refractedColor, XMVectorExpE(-distance * XMLoadFloat3(&object->mat.extinction)));
+                
 
             }
 
-            XMStoreFloat3(&color, finalColor);
+            XMStoreFloat3(&color, reflectColor + refractedColor);
            
            
         }
        
             
+    }
+    else
+    {
+        ray.t = 0.0f;
     }
     return color;
 }
