@@ -16,6 +16,7 @@
 #include <iomanip>
 #include <omp.h>
 #include <iostream>
+#include <algorithm>
 #include <vector>
 #include <memory>
 #include <wrl.h>

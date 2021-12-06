@@ -18,7 +18,7 @@ Game::Game(UINT width, UINT height, std::wstring name) :
     XMFLOAT3 lookAt(0.0f, 0.0f, 0.0f);
     XMFLOAT3 up(0.0f, 1.0f, 0.0f);
     m_camera = new Camera(XMLoadFloat3(&origin), XMLoadFloat3(&lookAt),
-        XMLoadFloat3(&up), 90.0f, aspect, 0.1f, 1.0f);
+        XMLoadFloat3(&up), 45.0f, aspect, 0.1f, 1.0f);
     m_Xprev = static_cast<float>(width) / 2.0f;
     m_Yprev = static_cast<float>(height) / 2.0f;
     m_firstClick = true;
@@ -345,23 +345,23 @@ void Game::LoadAssets()
         }
 
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(0.0f, 0.0f, -2.5f), 0.01f, Material(Material::Type::DIFFUSE, XMFLOAT3(240.0f / 255.0f, 128.0f / 255.0f, 128.0f / 255.0f))
+            XMFLOAT3(-1.0f, 0.0f, -4.1f), 0.01f, Material(Material::Type::DIFFUSE, XMFLOAT3(240.0f / 255.0f, 128.0f / 255.0f, 128.0f / 255.0f))
         )));
 
-       /* m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(0.1f, 0.05f, -4.0f), 0.01f, Material(Material::Type::DIFFUSE, XMFLOAT3(119.0f/ 255.0f, 136.0f / 255.0f, 153.0f / 255.0f))
-        )));*/
+        /* m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
+             XMFLOAT3(0.1f, 0.05f, -4.0f), 0.01f, Material(Material::Type::DIFFUSE, XMFLOAT3(119.0f/ 255.0f, 136.0f / 255.0f, 153.0f / 255.0f))
+         )));*/
 
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(0.0f, 1.0f, 4.0f), 0.01f, Material(Material::Type::DIFFUSE, XMFLOAT3(255.0f /255.0f, 215.0f / 255.0f, 0)))));
+            XMFLOAT3(-1.0f, 1.0f, 4.0f), 0.01f, Material(Material::Type::DIFFUSE, XMFLOAT3(255.0f / 255.0f, 215.0f / 255.0f, 0)))));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(0.0f, 0.0f, 0.0f), 2.0f, Material(Material::Type::DIELECTRIC, XMFLOAT3(0.85f, 0.9f, 1.0f), 1.3f)
+            XMFLOAT3(0.0f, 0.0f, 0.0f), 1.0f, Material(Material::Type::DIELECTRIC, XMFLOAT3(0.85f, 0.9f, 1.0f), 1.3f)
         )));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(0.0f, -0.5f, -2.5f), 0.01f, Material(Material::Type::DIFFUSE, XMFLOAT3(50.0f / 255.0f, 205.0f / 255.0f, 50.0f / 255.0f))
+            XMFLOAT3(-1.0f, -0.5f, -4.1f), 0.01f, Material(Material::Type::DIFFUSE, XMFLOAT3(50.0f / 255.0f, 205.0f / 255.0f, 50.0f / 255.0f))
         )));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(-0.4f, 0.2f, -2.5f), 0.01f, Material(Material::Type::DIFFUSE, XMFLOAT3(255.0f / 255.0f, 105.0f / 255.0f, 180.0f / 255.0f))
+            XMFLOAT3(-1.4f, 0.2f, -4.1f), 0.01f, Material(Material::Type::DIFFUSE, XMFLOAT3(255.0f / 255.0f, 105.0f / 255.0f, 180.0f / 255.0f))
         )));
 
         m_lights.push_back(Light(XMFLOAT3(2.0f, 4.5f, 0.0f), XMFLOAT3(1.0f, 0.7f, 0.9f), 15.0f, Light::Type::POINT));
@@ -386,8 +386,8 @@ void Game::GenerateTextureData()
    
     UINT8* pData = &m_rtOutput[0];
    
-//omp_set_num_threads(omp_get_max_threads());
-//#pragma omp parallel for schedule(dynamic, 50) num_threads(omp_get_max_threads())
+omp_set_num_threads(omp_get_max_threads());
+#pragma omp parallel for schedule(dynamic, 50) num_threads(omp_get_max_threads())
 for (INT p = 0; p < TextureWidth * TextureHeight; p++)
     {   
         UINT i = (UINT)p / TextureHeight;
@@ -419,7 +419,7 @@ bool Game::Trace(Ray& ray,const Intersectable*& object)
     
     for (int i = 0; i < m_geometry.size(); i++)
     {
-        if (m_geometry[i]->Intersect(ray) && ray.t < closestHit && ray.t > ray.tMin && ray.t <= ray.tMax)
+        if (m_geometry[i]->Intersect(ray) && ray.t < closestHit )
         {
             object = m_geometry[i].get();
             closestHit = ray.t;
@@ -433,6 +433,7 @@ bool Game::Trace(Ray& ray,const Intersectable*& object)
 XMFLOAT3 Game::ClosestHitShade(Ray& ray)
 {
     XMFLOAT3 color(0.6, 1.0f, 1.0f);
+    XMVECTOR finalColor = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
     const Intersectable* object = nullptr;
     if (ray.depth > 3)
         return color;
@@ -441,24 +442,27 @@ XMFLOAT3 Game::ClosestHitShade(Ray& ray)
        
         Surface surf;
         object->GetSurfaceData(surf, ray);
+        XMVECTOR matColor = XMLoadFloat3(&object->mat.color);
+        XMVECTOR N = XMLoadFloat3(&surf.normal);
+        XMVECTOR P = XMLoadFloat3(&surf.position);
         /*color = object->mat.Shade(surf, ray);*/
         if (object->mat.type == Material::Type::DIFFUSE)
         {
-            XMVECTOR colorV = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+            
             for (int i = 0; i < m_lights.size(); i++)
             {
 
                 Light light = m_lights[i];
-                XMVECTOR L = XMLoadFloat3(&light.position) - XMLoadFloat3(&surf.position);
+                XMVECTOR L = XMLoadFloat3(&light.position) - P;
                 float distance = XMVectorGetX(XMVector3Length(L));
                 L = XMVector3Normalize(L);
                 XMFLOAT3 Lf;
                 XMStoreFloat3(&Lf, L);
                 Ray shadowRay(surf.position, Lf, Ray::EPSILON, 0, distance, Ray::EPSILON);
                 float shadowAttenuation = AnyHit(shadowRay) ? 0.0f : 1.0f;
-                colorV += XMLoadFloat3(&object->mat.color) * XMLoadFloat3(&light.color) * light.intensity *
+                finalColor += matColor * XMLoadFloat3(&light.color) * light.intensity *
                     light.CosineAttenuation(surf.position, surf.normal) * shadowAttenuation * light.Attenuate(surf.position);
-                XMStoreFloat3(&color, colorV);
+                XMStoreFloat3(&color, finalColor);
             }
         }
             
@@ -466,9 +470,8 @@ XMFLOAT3 Game::ClosestHitShade(Ray& ray)
         else if (object->mat.type == Material::Type::SPECULAR)
         {
             ray.ReflectRay(surf);
-           
             color = ClosestHitShade(ray);
-            XMVECTOR finalColor = XMLoadFloat3(&color) * XMLoadFloat3(&object->mat.color);
+            finalColor = XMLoadFloat3(&color) * matColor;
             XMStoreFloat3(&color, finalColor);
             
            
@@ -479,59 +482,58 @@ XMFLOAT3 Game::ClosestHitShade(Ray& ray)
             float n1 = 1.0f;
             float n2 = object->mat.IOR;
             XMVECTOR dir = XMLoadFloat3(&ray.direction);
-            float cosThetaI = XMVectorGetX(XMVector3Dot(XMLoadFloat3(&surf.normal), -dir));
+            float cosThetaI = XMVectorGetX(XMVector3Dot(N, -dir));
             bool inside = false;
             if (cosThetaI < 0) // We are inside the object reverse the normal and IOR
             {
                 inside = true;
                 ior = object->mat.IOR;
                 std::swap(n1, n2);
-                /*XMStoreFloat3(&surf.normal, -XMLoadFloat3(&surf.normal));*/
+                XMStoreFloat3(&surf.normal, -N);
+                N = XMLoadFloat3(&surf.normal);
                 cosThetaI = -cosThetaI;
             }
             float ior2 = ior * ior;
             float cosThetaI2 = cosThetaI * cosThetaI;
             float k = 1.0f - ior2 * (1 - cosThetaI2);
-            XMVECTOR finalColor = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-            float sinThetaCrit = ior * sqrtf(max(0.0f, 1 - cosThetaI2));
-            //float cosThetaCrit = sqrtf(max(0.0f, (1.0f - ior2 * cosThetaI2)));
-            float cosThetaCrit = sqrtf(max(0.0f, (1.0f - sinThetaCrit * sinThetaCrit)));
-
-            float num1 = n1 * cosThetaI - n2 * cosThetaCrit;
-            float num2 = n1 * cosThetaCrit - n2 * cosThetaI;
-            float denom1 = n1 * cosThetaI + n2 * cosThetaCrit;
-            float denom2 = n1 * cosThetaCrit + n2 * cosThetaI;
-            float num12 = num1 * num1;
-            float num22 = num2 * num2;
-            float denom12 = denom1 * denom1;
-            float denom22 = denom2 * denom2;
-            float Fr = 0.5f * (num12 / denom12 + num22 / denom22);
             
-           /* float Rs = ((n1 * cosThetaI) - (n2 * cosThetaCrit)) / ((n1 * cosThetaI) + (n2 * cosThetaCrit));
-            float Rp = ((n2 * cosThetaI) - (n1 * cosThetaCrit)) / ((n2 * cosThetaI) + (n1 * cosThetaCrit));
-            float Fr = (Rs * Rs + Rp * Rp)  * 0.5f;*/
-            Fr = k < 0 ? 1.0f : Fr;
-            float Ft = k < 0 ? 0.0f : 1 - Fr;
+            float Fr = 1.0f;
+            if (k > 0)
+            {
+                float sinThetaCrit = ior * sqrtf(max(0.0f, 1 - cosThetaI2));
+                float cosThetaCrit = sqrtf(max(0.0f, (1.0f - sinThetaCrit * sinThetaCrit)));
+
+                float num1 = n1 * cosThetaI - n2 * cosThetaCrit;
+                float num2 = n1 * cosThetaCrit - n2 * cosThetaI;
+                float denom1 = n1 * cosThetaI + n2 * cosThetaCrit;
+                float denom2 = n1 * cosThetaCrit + n2 * cosThetaI;
+                float num12 = num1 * num1;
+                float num22 = num2 * num2;
+                float denom12 = denom1 * denom1;
+                float denom22 = denom2 * denom2;
+                Fr = 0.5f * (num12 / denom12 + num22 / denom22);
+            }
+            
+            float Ft = 1.0f - Fr;
+          
            
             Ray reflRay = ray;
             reflRay.ReflectRay(surf);
-            
-            XMVECTOR origin = XMLoadFloat3(&reflRay.origin) + (inside ? 1.0f : -1.0f  ) * Ray::EPSILON * XMLoadFloat3(&surf.normal);
-            XMStoreFloat3(&reflRay.origin, origin);
-                
+            /*XMVECTOR origin = P +  Ray::EPSILON * N;
+            XMStoreFloat3(&reflRay.origin, origin);*/
             color = ClosestHitShade(reflRay);
-            finalColor += Fr * XMLoadFloat3(&color) * XMLoadFloat3(&object->mat.color);
+            finalColor += Fr * XMLoadFloat3(&color) * matColor;
             
                 
             if (Ft > 0)
             {
                 Ray refrRay = ray;
                 refrRay.RefractRay(surf, cosThetaI, ior, k, !inside);
-                origin = XMLoadFloat3(&refrRay.origin) - (inside ? -1.0f : 1.0f) *  Ray::EPSILON * XMLoadFloat3(&surf.normal);
+                XMVECTOR origin = P - Ray::EPSILON * N;
                 XMStoreFloat3(&refrRay.origin, origin);
 
                 color = ClosestHitShade(refrRay);
-                finalColor += Ft * XMLoadFloat3(&color) * XMLoadFloat3(&object->mat.color);
+                finalColor += Ft * XMLoadFloat3(&color) * matColor;
                 XMStoreFloat3(&color, finalColor);
 
             }
