@@ -19,22 +19,13 @@ PSInput VSMain(float4 position : POSITION, float2 uv : TEXCOORD)
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-	// Barrel Distortion
-	float BarrelPower = 1.0f;
-	float2 ndc = input.uv * 2.0f - 1.0f;
-
-	float theta = atan2(ndc.y, ndc.x);
-	float radius = length(ndc);
-	radius = pow(radius, BarrelPower);
-	ndc.x = radius * cos(theta);
-	ndc.y = radius * sin(theta);
-	float2 texCoord =  0.5f * (ndc + 1.0f);
+	
 
 	float3 color;
 	// Chromatic Aberration
-	color.r = g_texture.Sample(g_sampler, texCoord - float2(0.001f, 0.001f)).r;
-	color.g = g_texture.Sample(g_sampler, texCoord).g;
-	color.b = g_texture.Sample(g_sampler, texCoord - float2(0.002f, 0.002f)).b;
+	color.r = g_texture.Sample(g_sampler, input.uv - float2(0.001f, 0.001f)).r;
+	color.g = g_texture.Sample(g_sampler, input.uv).g;
+	color.b = g_texture.Sample(g_sampler, input.uv - float2(0.002f, 0.002f)).b;
 
 
 	

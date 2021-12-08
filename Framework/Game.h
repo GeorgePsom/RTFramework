@@ -69,6 +69,8 @@ private:
 	float m_parallel;
 	float m_enableBarrel;
 	float m_texturing;
+	int m_samples;
+	int m_depth;
 	StepTimer m_timer;
 	float m_prevTime;
 	std::vector<Light> m_lights;

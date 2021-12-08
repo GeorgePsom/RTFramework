@@ -33,6 +33,7 @@
 #include "Light.h"
 #include "Plane.h"
 #include "Sphere.h"
+#include "Torus.h"
 
 
 

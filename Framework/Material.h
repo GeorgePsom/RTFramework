@@ -24,7 +24,7 @@ public :
 		XMVECTOR pointLight = XMLoadFloat3(&pointLightf);
 		XMFLOAT3 shadedColor;
 		XMStoreFloat3(&shadedColor,
-			XMLoadFloat3(&color) / XM_PI /** max(0.0f, XMVectorGetX(XMVector3Dot(XMLoadFloat3(&surf.normal), pointLight)))*/);
+			XMLoadFloat3(&color) / XM_PI );
 		return shadedColor;
 	}
 };

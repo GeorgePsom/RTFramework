@@ -31,6 +31,8 @@ Game::Game(UINT width, UINT height, std::wstring name) :
     m_parallel = 1.0f;
     m_enableBarrel = -1.0f;
     m_texturing = -1.0f;
+    m_samples = 1;
+    m_depth = 3;
 }
 
 void Game::OnInit()
@@ -363,30 +365,39 @@ void Game::LoadAssets()
         }
 
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(-1.0f, 0.0f, -4.1f), 0.01f, Material(Material::Type::DIFFUSE, XMFLOAT3(240.0f / 255.0f, 128.0f / 255.0f, 128.0f / 255.0f))
+            XMFLOAT3(-1.0f, -0.1f, -4.1f), 0.01f, Material(Material::Type::DIFFUSE, XMFLOAT3(240.0f / 255.0f, 128.0f / 255.0f, 128.0f / 255.0f))
+        )));
+        m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
+            XMFLOAT3(-1.9f, -0.5f, -4.1f), 0.01f, Material(Material::Type::DIFFUSE, XMFLOAT3(255.0f / 255.0f, 105.0f / 255.0f, 180.0f / 255.0f))
+        )));
+        m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
+            XMFLOAT3(-1.0f, -1.5f, -4.1f), 0.01f, Material(Material::Type::DIFFUSE, XMFLOAT3(50.0f / 255.0f, 205.0f / 255.0f, 50.0f / 255.0f))
         )));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
             XMFLOAT3(-1.0f, 1.0f, 4.0f), 0.01f, Material(Material::Type::DIFFUSE, XMFLOAT3(255.0f / 255.0f, 215.0f / 255.0f, 0)))));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(3.0f, 1.0f, 2.0f), 0.3f, Material(Material::Type::SPECULAR, XMFLOAT3(255.0f / 255.0f, 50.0f / 255.0f, 100.0f / 255.0f)))));
+            XMFLOAT3(4.0f, 2.0f, 2.0f), 0.3f, Material(Material::Type::SPECULAR, XMFLOAT3(255.0f / 255.0f, 50.0f / 255.0f, 100.0f / 255.0f)))));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(-5.0f, 1.0f, 2.0f), 0.2f, Material(Material::Type::SPECULAR, XMFLOAT3(205.0f / 255.0f, 50.0f / 155.0f, 0)))));
+            XMFLOAT3(1.0f, 2.0f, 2.0f), 0.3f, Material(Material::Type::SPECULAR, XMFLOAT3(155.0f / 255.0f, 150.0f / 255.0f, 60.0f / 255.0f)))));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(-2.0f, 2.0f, 2.0f), 0.01f, Material(Material::Type::SPECULAR, XMFLOAT3(155.0f / 255.0f, 50.0f / 255.0f, 150.0f / 255.0f)))));
+            XMFLOAT3(-5.0f, 1.0f, 2.0f), 0.2f, Material(Material::Type::SPECULAR, XMFLOAT3(205.0f / 255.0f, 50.0f / 255.0f, 0)))));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(0.0f, 0.0f, 2.0f), 1.0f, Material(Material::Type::DIELECTRIC, XMFLOAT3(0.85f, 0.9f, 1.0f), 1.3f, XMFLOAT3(0.7, 0.3, 0.7)))));
+            XMFLOAT3(-3.0f, 2.0f, 2.0f), 0.01f, Material(Material::Type::SPECULAR, XMFLOAT3(255.0f / 255.0f, 50.0f / 255.0f, 150.0f / 255.0f)))));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(-1.0f, -0.5f, -4.1f), 0.01f, Material(Material::Type::DIFFUSE, XMFLOAT3(50.0f / 255.0f, 205.0f / 255.0f, 50.0f / 255.0f))
-        )));
+            XMFLOAT3(2.0f, 0.0f, 2.0f), 1.0f, Material(Material::Type::DIELECTRIC, XMFLOAT3(0.85f, 0.9f, 1.0f), 1.3f, XMFLOAT3(0.7, 0.3, 0.7)))));
+       
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(4.0f, -1.0f, 8.0f), 0.5f, Material(Material::Type::DIELECTRIC, XMFLOAT3(0.35f, 0.4f, 1.0f), 1.5f, XMFLOAT3(0.9, 0.8, 0.4)))));
+            XMFLOAT3(4.0f, -2.0f, 8.0f), 0.5f, Material(Material::Type::DIELECTRIC, XMFLOAT3(0.35f, 0.4f, 1.0f), 1.5f, XMFLOAT3(0.9, 0.8, 0.4)))));
 
-        m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(-1.4f, 0.2f, -4.1f), 0.01f, Material(Material::Type::DIFFUSE, XMFLOAT3(255.0f / 255.0f, 105.0f / 255.0f, 180.0f / 255.0f))
-        )));
+        
+     
 
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Plane(
             XMFLOAT3(0.0f, -3.0f, 0.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), 40.0f, 40.0f, Material(Material::Type::DIFFUSE, XMFLOAT3(1.0f, 0.0f, 1.0f))
+        )));
+
+        m_geometry.push_back(std::unique_ptr<Intersectable>(new Torus(
+            0.5f, 0.2f, Material(Material::Type::DIFFUSE, XMFLOAT3(255.0f / 255.0f, 105.0f / 255.0f, 180.0f / 255.0f))
         )));
         m_lights.push_back(Light(XMFLOAT3(-1.0f, 1.f, -4.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 10.0f, Light::Type::SPOT, 15 * XM_PI / 180.0f, 5.0f * XM_PI / 180.0f));
         m_lights.push_back(Light(XMFLOAT3(-1.0f, 2.f, -4.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT3(0.5f, 0.78f, 0.9f), 10.0f, Light::Type::SPOT, 15 * XM_PI / 180.0f, 5.0f * XM_PI / 180.0f));
@@ -425,9 +436,8 @@ omp_set_num_threads(omp_get_max_threads());
         UINT n = rowPitch * j + i * TexturePixelSize;
       
         srand(12);
-        int samples = 1;
         XMFLOAT3 color(0.0f, 0.0f, 0.0f);
-        for (int s = 0; s < samples; s++)
+        for (int s = 0; s < m_samples; s++)
         {
             
             float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
@@ -458,9 +468,9 @@ omp_set_num_threads(omp_get_max_threads());
 
             
         }
-        pData[n] = min(1.0f, color.x / samples) * 255.0f ;
-        pData[n + 1] = min(1.0f, color.y / samples) * 255.0f;
-        pData[n + 2] = min(1.0f, color.z / samples) * 255.0f;
+        pData[n] = min(1.0f, color.x / m_samples) * 255.0f ;
+        pData[n + 1] = min(1.0f, color.y / m_samples) * 255.0f;
+        pData[n + 2] = min(1.0f, color.z / m_samples) * 255.0f;
         pData[n + 3] = 255;
         
         
@@ -494,7 +504,7 @@ XMFLOAT3 Game::ClosestHitShade(Ray& ray)
     XMFLOAT3 color(0.6, 1.0f, 1.0f);
     XMVECTOR finalColor = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
     const Intersectable* object = nullptr;
-    if (ray.depth > 5)
+    if (ray.depth > m_depth)
         return color;
     if (Trace(ray, object))
     {
@@ -765,6 +775,12 @@ void Game::OnKeyUp(UINT8 key)
     case VK_DOWN:
         m_fovState = 0;
         break;
+    case VK_LEFT:
+        m_depth = max(1, m_depth - 1);
+        break;
+    case VK_RIGHT:
+        m_depth = min(16, m_depth + 1);
+        break;
     case 'B':
         m_barrelState = 0.0f;
         break;
@@ -779,6 +795,12 @@ void Game::OnKeyUp(UINT8 key)
         break;
     case 'T':
         m_texturing *= -1.0f;
+    case 'Z':
+        m_samples = min(m_samples + 1, 16);
+        break;
+    case 'X':
+        m_samples = max(m_samples - 1, 1);
+        break;
     }
 }
 
