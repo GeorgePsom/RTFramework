@@ -9,7 +9,7 @@ class Camera
 
 	
 public:
-	Camera(XMVECTOR origin, XMVECTOR viewVector, XMVECTOR upVector, float FOV, float aspect, float aperture, float focal_distance);
+	Camera(XMVECTOR origin, XMVECTOR viewVector, XMVECTOR upVector, float FOV, float aspect, float focal_distance);
 	~Camera();
 	void MoveCamera(XMVECTOR& moveX, XMVECTOR& moveZ, float dt);
 	void RotateCamera(float x, float y);

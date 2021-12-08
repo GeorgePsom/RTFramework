@@ -5,7 +5,7 @@
 
 
 
-Camera::Camera(XMVECTOR origin, XMVECTOR lookAt, XMVECTOR upVector, float FOV, float aspect, float aperture, float focal_distance)
+Camera::Camera(XMVECTOR origin, XMVECTOR lookAt, XMVECTOR upVector, float FOV, float aspect, float focal_distance)
 {
 	this->focal_distance = focal_distance;
 	phi = FOV * XM_PI / 180.0f;

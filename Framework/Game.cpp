@@ -18,7 +18,7 @@ Game::Game(UINT width, UINT height, std::wstring name) :
     XMFLOAT3 lookAt(0.0f, 0.0f, 0.0f);
     XMFLOAT3 up(0.0f, 1.0f, 0.0f);
     m_camera = new Camera(XMLoadFloat3(&origin), XMLoadFloat3(&lookAt),
-        XMLoadFloat3(&up), 60.0f, aspect, 0.1f, 1.0f);
+        XMLoadFloat3(&up), 60.0f, aspect, 1.0f);
     m_Xprev = static_cast<float>(width) / 2.0f;
     m_Yprev = static_cast<float>(height) / 2.0f;
     m_firstClick = true;
