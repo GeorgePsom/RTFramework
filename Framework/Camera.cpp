@@ -3,29 +3,11 @@
 
 
 
-//Camera::Camera(const XMFLOAT3& position, const XMFLOAT3& viewVector, float FOV, float width, float height)
-//{
-//	this->position = position;
-//	this->viewDirection = viewVector;
-//	this->FOV = FOV * XM_PI / 180.0f;
-//	this->width = 2;
-//	this->height = 2;
-//	focal_length = this->width * tan(0.5 * (double)FOV);
-//	double f = 2 * atan(36.0 / (2.0 * 50.0));
-//	double fdegrees = f * 180.0 / XM_PI;
-//	XMVECTOR C = XMLoadFloat3(&this->position) + focal_length * XMLoadFloat3(&this->viewDirection);
-//	XMStoreFloat3(&P0, C + XMLoadFloat3(new XMFLOAT3(-1.0f, -1.0f, 0.0f)));
-//	XMStoreFloat3(&P1, C + XMLoadFloat3(new XMFLOAT3(1.0f, -1.0f, 0.0f)));
-//	XMStoreFloat3(&P2, C + XMLoadFloat3(new XMFLOAT3(-1.0f, 1.0f, 0.0f)));
-//
-//
-//		
-//}
+
 
 Camera::Camera(XMVECTOR origin, XMVECTOR lookAt, XMVECTOR upVector, float FOV, float aspect, float aperture, float focal_distance)
 {
 	this->focal_distance = focal_distance;
-	/*lens_radius = aperture * 0.5f;*/
 	phi = FOV * XM_PI / 180.0f;
 	this->FOV = FOV;
 	half_height = tan(phi * 0.5f);

@@ -8,7 +8,7 @@ public:
 	Sphere(const XMFLOAT3& center, float radius, Material& mat);
 	~Sphere();
 	Sphere();
-	bool Intersect(Ray& ray) const override;
+	bool Intersect(Ray& ray)  override;
 	void GetSurfaceData(Surface& surf, Ray& ray) const override;
 	
 	

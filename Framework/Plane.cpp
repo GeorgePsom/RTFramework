@@ -9,7 +9,7 @@ Plane::~Plane()
 {
 }
 
-bool Plane::Intersect(Ray& ray) const
+bool Plane::Intersect(Ray& ray) 
 {
     
     float t;
@@ -41,5 +41,13 @@ void Plane::GetSurfaceData(Surface& surf, Ray& ray) const
         XMLoadFloat3(&ray.origin) + ray.t * XMLoadFloat3(&ray.direction)
     );
     XMStoreFloat3(&surf.normal, XMLoadFloat3(&normal));
-    surf.tex = XMFLOAT2(0.0f, 0.0f);
+    XMFLOAT3 tang(0.0f, 0.0f, 1.0f);
+    XMVECTOR binormal = XMVector3Normalize(XMVector3Cross(XMLoadFloat3(&normal), XMLoadFloat3(&tang)));
+    XMVECTOR tangent = XMVector3Normalize(XMVector3Cross(binormal, XMLoadFloat3(&normal)));
+    XMVECTOR pCenter = XMLoadFloat3(&center) - XMLoadFloat3(&surf.position);
+    float x = XMVectorGetX(XMVector3Dot(pCenter, tangent));
+    float z = XMVectorGetX(XMVector3Dot(pCenter, binormal));
+   
+    surf.tex = XMFLOAT2((x / xSize) * 0.5f + 0.5f, (z / zSize)* 0.5f + 0.5f);
+  
 }

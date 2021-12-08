@@ -31,22 +31,24 @@ float4 PSMain(PSInput input) : SV_TARGET
 	float2 texCoord =  0.5f * (ndc + 1.0f);
 
 	float3 color;
-	// Chromatic Abreviation
+	// Chromatic Aberration
 	color.r = g_texture.Sample(g_sampler, texCoord - float2(0.001f, 0.001f)).r;
-	color.g = g_texture.Sample(g_sampler, texCoord /*- float2(0.0015f, 0.0015f)*/).g;
+	color.g = g_texture.Sample(g_sampler, texCoord).g;
 	color.b = g_texture.Sample(g_sampler, texCoord - float2(0.002f, 0.002f)).b;
 
 
 	
 	// Vignette
-	float falloff = 0.5f;
-	float2 coord = (input.uv - 0.5)  * 2;
-	float rf = sqrt(dot(coord, coord)) * 1.0f;
-	float rf2_1 = rf * rf + 1.0;
-	float e = 1.0 / (rf2_1 * rf2_1);
+	const float outerRadius = 0.6;
+	const float innerRadius = 0.2f;
+	const float intensity = 0.8f;
+	float2 pos = input.uv - 0.5f;
+	float len = length(pos);
+	float vignette = smoothstep(outerRadius, innerRadius, len);
+	color.rgb = lerp(color.rgb, color.rgb * vignette, intensity);
 
 	
-	color *= e;
+	/*color *= e;*/
 	float gamma = 1.0f / 2.2f;
 	
 	color = float3(pow(color.r, gamma), pow(color.g, gamma), pow(color.b, gamma));

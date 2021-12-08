@@ -10,7 +10,7 @@ Sphere::Sphere()
 
 Sphere::~Sphere(){}
 
-bool Sphere::Intersect(Ray& ray) const
+bool Sphere::Intersect(Ray& ray) 
 {
 	
 	float t0, t1;

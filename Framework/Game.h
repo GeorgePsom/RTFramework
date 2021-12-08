@@ -66,6 +66,9 @@ private:
 	INT m_fovState;
 	float m_barrelPower;
 	float m_barrelState;
+	float m_parallel;
+	float m_enableBarrel;
+	float m_texturing;
 	StepTimer m_timer;
 	float m_prevTime;
 	std::vector<Light> m_lights;

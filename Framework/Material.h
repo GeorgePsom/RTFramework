@@ -6,10 +6,10 @@ class Material
 public :
 
 	enum class Type { DIFFUSE, SPECULAR, DIELECTRIC };
-	Material(Type t, XMFLOAT3 c) :
+	Material(Type t, XMFLOAT3& c) :
 		type(t), color(c)
 	{};
-	Material() : type(Type::DIFFUSE), color(XMFLOAT3(1.0f, 0.0f, 0.0f)){}
+	Material() : type(Type::DIFFUSE), color(XMFLOAT3(1.0f, 1.0f, 1.0f)){}
 	Material(Type t, XMFLOAT3& c, float i, XMFLOAT3& a) : type(t), color(c), IOR(i), I_IOR(1.0f / i), extinction(a) {};
 	~Material() {};
 	XMFLOAT3 color;
