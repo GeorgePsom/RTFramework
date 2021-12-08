@@ -12,8 +12,8 @@ public:
 	Camera(XMVECTOR origin, XMVECTOR viewVector, XMVECTOR upVector, float FOV, float aspect, float aperture, float focal_distance);
 	~Camera();
 	void MoveCamera(XMVECTOR& moveX, XMVECTOR& moveZ, float dt);
-	/*void RegisterMovement(MOVEMENT type);*/
 	void RotateCamera(float x, float y);
+	void ModifyFOV(float delta, INT increase);
 	Ray GetRayDirection(float u, float v);
 	
 	enum class MOVEMENT
@@ -28,6 +28,7 @@ public:
 	XMFLOAT3 position;
 	XMFLOAT3 viewDirection;
 	float focal_length;
+	float aspect;
 	XMFLOAT3 lower_left_corner;
 	XMFLOAT3 horizontal, vertical;
 	float FOV;

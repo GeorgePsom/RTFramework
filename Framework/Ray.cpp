@@ -38,14 +38,7 @@ void Ray::RefractRay(Surface& surf, float cosThetaI, float IOR, float k, bool fr
 {
 	XMVECTOR refractDir = XMVector3Normalize(IOR * XMLoadFloat3(&direction) + XMLoadFloat3(&surf.normal) * (IOR * cosThetaI - sqrt(k)));
 	XMStoreFloat3(&direction, refractDir);
-	/*XMVECTOR newOrigin = XMLoadFloat3(&surf.position);
-	XMStoreFloat3(&origin, newOrigin);*/
-	/*XMVECTOR N = front ? XMLoadFloat3(&surf.normal) : -XMLoadFloat3(&surf.normal);
-	XMVECTOR r_out_per = IOR * (XMLoadFloat3(&direction) + cosThetaI * N);
-	XMVECTOR r_out_parallel = -sqrtf(fabs(1.0 - XMVectorGetX(XMVector3LengthSq(r_out_per)))) * N;
-	XMStoreFloat3(&direction, r_out_per + r_out_parallel);
-	XMVECTOR newOrigin = XMLoadFloat3(&surf.position);
-	XMStoreFloat3(&origin, newOrigin);*/
+	
 	
 	tMin = EPSILON;
 	depth++;

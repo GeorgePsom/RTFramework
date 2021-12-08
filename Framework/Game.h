@@ -63,7 +63,11 @@ private:
 	UINT m_Xprev, m_Yprev;
 	float m_AngleX, m_AngleY;
 	bool m_firstClick;
+	INT m_fovState;
+	float m_barrelPower;
+	float m_barrelState;
 	StepTimer m_timer;
+	float m_prevTime;
 	std::vector<Light> m_lights;
 	std::vector<std::unique_ptr<Intersectable>> m_geometry;
 	std::vector<UINT8> m_rtOutput;
@@ -81,7 +85,7 @@ private:
 	bool Trace(Ray& ray, const Intersectable*& object);
 	XMFLOAT3 ClosestHitShade(Ray& ray);
 	bool AnyHit(Ray& ray);
-
+	XMFLOAT3 GetTexture(XMFLOAT2& tex);
 	void CalculateFrameStats();
 	void PopulateCommandList();
 	void WaitForPreviousFrame();

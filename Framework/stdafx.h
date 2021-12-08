@@ -21,6 +21,8 @@
 #include <memory>
 #include <wrl.h>
 #include <shellapi.h>
+#include <cstdlib>
+#include <ctime>
 
 #include "StepTimer.h"
 #include "Camera.h"
@@ -29,7 +31,7 @@
 #include "Intersectable.h"
 #include "Material.h"
 #include "Light.h"
-
+#include "Plane.h"
 #include "Sphere.h"
 
 

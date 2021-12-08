@@ -14,16 +14,20 @@ Game::Game(UINT width, UINT height, std::wstring name) :
 
 {
     float aspect = static_cast<float>(width) / static_cast<float>(height);
-    XMFLOAT3 origin(0.0f, 0.0f, -2.0f);
+    XMFLOAT3 origin(5.0f, 0.0f, 5.0f);
     XMFLOAT3 lookAt(0.0f, 0.0f, 0.0f);
     XMFLOAT3 up(0.0f, 1.0f, 0.0f);
     m_camera = new Camera(XMLoadFloat3(&origin), XMLoadFloat3(&lookAt),
-        XMLoadFloat3(&up), 45.0f, aspect, 0.1f, 1.0f);
+        XMLoadFloat3(&up), 60.0f, aspect, 0.1f, 1.0f);
     m_Xprev = static_cast<float>(width) / 2.0f;
     m_Yprev = static_cast<float>(height) / 2.0f;
     m_firstClick = true;
     m_cameraMovementX = XMFLOAT3(0.0f, 0.0f, 0.0f);
     m_cameraMovementZ = XMFLOAT3(0.0f, 0.0f, 0.0f);
+    m_fovState = 0;
+    m_prevTime = 0.0f;
+    m_barrelPower = 1.0f;
+    m_barrelState = 0.0f;
 }
 
 void Game::OnInit()
@@ -195,17 +199,28 @@ void Game::LoadAssets()
     {
         ComPtr<ID3DBlob> vertexShader;
         ComPtr<ID3DBlob> pixelShader;
+        ComPtr<ID3DBlob> errors;
 
-#if defined(_DEBUG)
-        // Enable better shader debugging with the graphics debugging tools.
-        UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#else
         UINT compileFlags = 0;
+#if defined(DEBUG) || defined(_DEBUG)  
+        compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #endif
 
-        ThrowIfFailed(D3DCompileFromFile(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, nullptr));
-        ThrowIfFailed(D3DCompileFromFile(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, nullptr));
+        HRESULT hr = S_OK;
 
+       
+
+        
+        hr = D3DCompileFromFile(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, &errors);
+        if (errors != nullptr)
+            OutputDebugStringA((char*)errors->GetBufferPointer());
+
+        ThrowIfFailed(hr);
+        hr = D3DCompileFromFile(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, &errors);
+        if (errors != nullptr)
+            OutputDebugStringA((char*)errors->GetBufferPointer());
+
+        ThrowIfFailed(hr);
         // Define the vertex input layout.
         D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
         {
@@ -355,7 +370,9 @@ void Game::LoadAssets()
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
             XMFLOAT3(-1.0f, 1.0f, 4.0f), 0.01f, Material(Material::Type::DIFFUSE, XMFLOAT3(255.0f / 255.0f, 215.0f / 255.0f, 0)))));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(0.0f, 0.0f, 0.0f), 1.0f, Material(Material::Type::DIELECTRIC, XMFLOAT3(0.85f, 0.9f, 1.0f), 1.3f, XMFLOAT3(0.2, 0.6, 0.6)))));
+            XMFLOAT3(-2.0f, 2.0f, 2.0f), 0.01f, Material(Material::Type::SPECULAR, XMFLOAT3(255.0f / 155.0f, 50.0f / 255.0f, 0)))));
+        m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
+            XMFLOAT3(0.0f, 0.0f, 2.0f), 1.0f, Material(Material::Type::DIELECTRIC, XMFLOAT3(0.85f, 0.9f, 1.0f), 1.3f, XMFLOAT3(0.2, 0.6, 0.6)))));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
             XMFLOAT3(-1.0f, -0.5f, -4.1f), 0.01f, Material(Material::Type::DIFFUSE, XMFLOAT3(50.0f / 255.0f, 205.0f / 255.0f, 50.0f / 255.0f))
         )));
@@ -363,12 +380,17 @@ void Game::LoadAssets()
             XMFLOAT3(-1.4f, 0.2f, -4.1f), 0.01f, Material(Material::Type::DIFFUSE, XMFLOAT3(255.0f / 255.0f, 105.0f / 255.0f, 180.0f / 255.0f))
         )));
 
+        m_geometry.push_back(std::unique_ptr<Intersectable>(new Plane(
+            XMFLOAT3(0.0f, -3.0f, 0.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), 20.0f, 20.0f, Material(Material::Type::DIFFUSE, XMFLOAT3(255.0f / 255.0f, 105.0f / 255.0f, 180.0f / 255.0f))
+        )));
+
         m_lights.push_back(Light(XMFLOAT3(2.0f, 4.5f, 0.0f), XMFLOAT3(1.0f, 0.7f, 0.9f), 15.0f, Light::Type::POINT));
-        m_lights.push_back(Light(XMFLOAT3(0.0f, 0.0f, 5.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 60.0f, Light::Type::POINT));
+       /* m_lights.push_back(Light(XMFLOAT3(0.0f, 0.0f, 5.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 60.0f, Light::Type::POINT));*/
 
         const UINT rowPitch = TextureWidth * TexturePixelSize;
         const UINT textureSize = rowPitch * TextureHeight;
         m_rtOutput = std::vector<UINT8>(textureSize);
+        
         // Wait for the command list to execute; we are reusing the same command 
         // list in our main loop but for now, we just want to wait for setup to 
         // complete before continuing.
@@ -387,23 +409,51 @@ void Game::GenerateTextureData()
    
 omp_set_num_threads(omp_get_max_threads());
 #pragma omp parallel for schedule(dynamic, 50) num_threads(omp_get_max_threads())
-for (INT p = 0; p < TextureWidth * TextureHeight; p++)
-    {   
+    for (INT p = 0; p < TextureWidth * TextureHeight; p++)
+    {
         UINT i = (UINT)p / TextureHeight;
         UINT j = (UINT)p - i * TextureHeight;
-        UINT n = rowPitch * j + i * TexturePixelSize; 
-        float u = float(i) / (static_cast<float>(TextureWidth) - 1.0f);
-        float v = float(j) / (static_cast<float>(TextureHeight) -1.0f);
-            
-        Ray ray = m_camera->GetRayDirection(u, v);
+        UINT n = rowPitch * j + i * TexturePixelSize;
+       /* pData[n] = 0.0f;
+        pData[n + 1] = 0.0f;
+        pData[n + 2] = 0.0f;
+        pData[n + 3] = 0.0f;*/
+        srand(12);
+        int samples = 1;
         XMFLOAT3 color(0.0f, 0.0f, 0.0f);
-        color = ClosestHitShade(ray);
+        for (int s = 0; s < samples; s++)
+        {
+            
+            float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+            float u = (float(i) + r) / (static_cast<float>(TextureWidth) - 1.0f);
+            float v = (float(j) + r)/ (static_cast<float>(TextureHeight) - 1.0f);
 
             
-        pData[n] = min(1.0f ,color.x) * 255.0f;
-        pData[n + 1] = min(1.0f, color.y) * 255.0f;
-        pData[n + 2] = min(1.0f, color.z) * 255.0f;
+            XMFLOAT2 ndc;
+            XMFLOAT2 uv(u, v);
+            XMStoreFloat2(&ndc, XMLoadFloat2(&uv) * 2.0f - XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f));
+
+            float theta = atan2(ndc.y, ndc.x);
+            float radius = XMVectorGetX(XMVector2Length(XMLoadFloat2(&ndc)));
+            radius = pow(radius, m_barrelPower);
+            ndc.x = radius * cos(theta);
+            ndc.y = radius * sin(theta);
+            uv = XMFLOAT2((ndc.x +1.0) * 0.5f, (ndc.y  + 1.0)* 0.5f);
+
+            Ray ray = m_camera->GetRayDirection(uv.x, uv.y);
+           
+            XMFLOAT3 result = ClosestHitShade(ray);
+            XMVECTOR colorV = XMLoadFloat3(&color) + XMLoadFloat3(&result);
+            XMStoreFloat3(&color, colorV);
+
+            
+        }
+        pData[n] = min(1.0f, color.x / samples) * 255.0f ;
+        pData[n + 1] = min(1.0f, color.y / samples) * 255.0f;
+        pData[n + 2] = min(1.0f, color.z / samples) * 255.0f;
         pData[n + 3] = 255;
+        
+        
     }
 
     
@@ -434,14 +484,14 @@ XMFLOAT3 Game::ClosestHitShade(Ray& ray)
     XMFLOAT3 color(0.6, 1.0f, 1.0f);
     XMVECTOR finalColor = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
     const Intersectable* object = nullptr;
-    if (ray.depth > 3)
+    if (ray.depth > 5)
         return color;
     if (Trace(ray, object))
     {
        
         Surface surf;
         object->GetSurfaceData(surf, ray);
-        XMVECTOR matColor = XMLoadFloat3(&object->mat.color);
+        XMVECTOR matColor = XMLoadFloat3(&object->mat.color) * XMLoadFloat3(&GetTexture(surf.tex));
         XMVECTOR N = XMLoadFloat3(&surf.normal);
         XMVECTOR P = XMLoadFloat3(&surf.position);
         /*color = object->mat.Shade(surf, ray);*/
@@ -568,6 +618,16 @@ bool Game::AnyHit(Ray& ray)
     
 
 }
+XMFLOAT3 Game::GetTexture(XMFLOAT2& tex)
+{
+    float size = 8;
+    UINT x = (UINT)(tex.x * size);
+    UINT y = (UINT)(tex.y * size);
+    if (x % 2 == y % 2)
+        return XMFLOAT3(1.0f, 1.0f, 1.0f);
+
+    return XMFLOAT3(0.5f, 0.5f, 0.5f);
+}
 // Update frame-based values.
 void Game::OnUpdate()
 {
@@ -575,6 +635,8 @@ void Game::OnUpdate()
     CalculateFrameStats();
     float delta = static_cast<float>(m_timer.GetElapsedSeconds());
     m_camera->MoveCamera(XMLoadFloat3(&m_cameraMovementX), XMLoadFloat3 (&m_cameraMovementZ), delta);
+    m_camera->ModifyFOV(delta, m_fovState);
+    m_barrelPower += m_barrelState * delta;
     ThrowIfFailed(m_commandAllocator->Reset());
     ThrowIfFailed(m_commandList->Reset(m_commandAllocator.Get(), m_pipelineState.Get()));
    
@@ -591,27 +653,16 @@ void Game::OnUpdate()
 }
 void Game::CalculateFrameStats()
 {
-    static int frameCnt = 0;
-    static double prevTime = 0.0f;
-    double totalTime = m_timer.GetTotalSeconds();
-
-    frameCnt++;
-
-    // Compute averages over one second period.
-    if ((totalTime - prevTime) >= 1.0f)
-    {
-        float diff = static_cast<float>(totalTime - prevTime);
-        float fps = static_cast<float>(frameCnt) / diff; // Normalize to an exact second.
-
-        frameCnt = 0;
-        prevTime = totalTime;
-        
-
-        std::wstringstream windowText;
-        windowText << std::setprecision(2) << std::fixed
-            << L"    fps: " << fps;
-        SetCustomWindowText(windowText.str().c_str());
-    }
+   
+    
+    double time = m_timer.GetElapsedSeconds();
+    float timeMsec = 1000 * time;
+  
+    std::wstringstream windowText;
+    windowText << std::setprecision(2) << std::fixed
+        << L"    Time(msec): " << timeMsec;
+    SetCustomWindowText(windowText.str().c_str());
+    
 }
 
 // Render the scene.
@@ -655,6 +706,17 @@ void Game::OnKeyDown(UINT8 key)
     case 'D':
         XMStoreFloat3(&m_cameraMovementX, m_camera->right);
         break;
+    case VK_UP:
+        m_fovState = -1;
+        break;
+    case VK_DOWN:
+        m_fovState = 1;
+        break;
+    case 'B':
+        m_barrelState = 1.0f;
+        break;
+    case 'N':
+        m_barrelState = -1.0;
     }
 }
 
@@ -676,6 +738,18 @@ void Game::OnKeyUp(UINT8 key)
     case 'D':
         m_cameraMovementX = XMFLOAT3(0.0f, 0.0f, 0.0f);
         break;
+    case VK_UP:
+        m_fovState = 0;
+        break;
+    case VK_DOWN:
+        m_fovState = 0;
+        break;
+    case 'B':
+        m_barrelState = 0.0f;
+        break;
+    case 'N':
+        m_barrelState = 0.0;
+
     }
 }
 

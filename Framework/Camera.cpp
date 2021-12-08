@@ -25,9 +25,11 @@
 Camera::Camera(XMVECTOR origin, XMVECTOR lookAt, XMVECTOR upVector, float FOV, float aspect, float aperture, float focal_distance)
 {
 	this->focal_distance = focal_distance;
-	lens_radius = aperture * 0.5f;
+	/*lens_radius = aperture * 0.5f;*/
 	phi = FOV * XM_PI / 180.0f;
+	this->FOV = FOV;
 	half_height = tan(phi * 0.5f);
+	this->aspect = aspect;
 	half_width = aspect * half_height;
 	XMStoreFloat3(&this->position, origin);
 	XMVECTOR viewVector = XMVector3Normalize(origin - lookAt);
@@ -95,6 +97,23 @@ void Camera::RotateCamera(float x, float y)
 	XMStoreFloat3(&this->horizontal, 2 * half_width * focal_distance * right);
 	XMStoreFloat3(&this->vertical, 2 * half_height * focal_distance * up);
 
+}
+
+void Camera::ModifyFOV(float delta, INT increase)
+{
+	FOV = FOV + (float)increase * delta * 20.0f;
+	FOV = FOV >= 179.9 ? 179.9 : FOV;
+	FOV = FOV <= 0.1 ? 0.1 : FOV;
+	phi = FOV * XM_PI / 180.0f;
+	this->FOV = FOV;
+	half_height = tan(phi * 0.5f);
+	half_width = aspect * half_height;
+	
+	
+	XMVECTOR lower_left_corner = XMLoadFloat3(&position) - half_width * focal_distance * right - half_height * focal_distance * up - focal_distance * XMLoadFloat3(&viewDirection);
+	XMStoreFloat3(&this->lower_left_corner, lower_left_corner);
+	XMStoreFloat3(&horizontal, 2 * half_width * focal_distance * right);
+	XMStoreFloat3(&vertical, 2 * half_height * focal_distance * up);
 }
 
 
