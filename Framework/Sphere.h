@@ -5,7 +5,7 @@ using namespace DirectX;
 class Sphere : public Intersectable
 {
 public:
-	Sphere(const XMFLOAT3& center, float radius, Material& mat);
+	Sphere(const XMVECTOR& center, float radius, Material& mat);
 	~Sphere();
 	Sphere();
 	bool Intersect(Ray& ray)  override;
@@ -13,7 +13,7 @@ public:
 	
 	
 	Material mat;
-	XMFLOAT3 center;
+	XMVECTOR center;
 	float r2;
 
 	

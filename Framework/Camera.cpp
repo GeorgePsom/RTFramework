@@ -13,18 +13,16 @@ Camera::Camera(XMVECTOR origin, XMVECTOR lookAt, XMVECTOR upVector, float FOV, f
 	half_height = tan(phi * 0.5f);
 	this->aspect = aspect;
 	half_width = aspect * half_height;
-	XMStoreFloat3(&this->position, origin);
+	this->position =  origin;
 	XMVECTOR viewVector = XMVector3Normalize(origin - lookAt);
-	XMStoreFloat3(&this->viewDirection, viewVector);
+	this->viewDirection = viewVector;
 	right = XMVector3Normalize(XMVector3Cross(viewVector, upVector));
 	up = XMVector3Normalize(XMVector3Cross(right, viewVector));
-	XMFLOAT3 rightf, upf;
-	XMStoreFloat3(&rightf, right);
-	XMStoreFloat3(&upf, up);
+	
 	XMVECTOR lower_left_corner = origin - half_width * focal_distance * right - half_height * focal_distance * up - focal_distance * viewVector;
-	XMStoreFloat3(&this->lower_left_corner, lower_left_corner);
-	XMStoreFloat3(&this->horizontal, 2 * half_width * focal_distance * right);
-	XMStoreFloat3(&this->vertical, 2 * half_height * focal_distance * up);
+	this->lower_left_corner, lower_left_corner;
+	this->horizontal = 2 * half_width * focal_distance * right;
+	this->vertical = 2 * half_height * focal_distance * up;
 	yaw = YAW;
 	pitch = PITCH;
 }
@@ -36,14 +34,12 @@ Camera::~Camera()
 void Camera::MoveCamera(XMVECTOR& moveX, XMVECTOR& moveZ, float dt)
 {
 	
-	XMVECTOR newOrigin = XMLoadFloat3(&this->position) + dt * (moveX + moveZ);
-	XMFLOAT3 newOriginF;
-	XMStoreFloat3(&newOriginF, newOrigin);
-	this->position = newOriginF;
-	XMVECTOR lower_left_corner = newOrigin - half_width * focal_distance * right - half_height * focal_distance * up - focal_distance * XMLoadFloat3(&this->viewDirection);
-	XMStoreFloat3(&this->lower_left_corner, lower_left_corner);
-	XMStoreFloat3(&this->horizontal, 2 * half_width * focal_distance * right);
-	XMStoreFloat3(&this->vertical, 2 * half_height * focal_distance * up);
+	position = this->position + dt * (moveX + moveZ);
+	
+	XMVECTOR lower_left_corner = position - half_width * focal_distance * right - half_height * focal_distance * up - focal_distance * this->viewDirection;
+	this->lower_left_corner = lower_left_corner;
+	this->horizontal = 2 * half_width * focal_distance * right;
+	this->vertical = 2 * half_height * focal_distance * up;
 
 }
 
@@ -60,24 +56,21 @@ void Camera::RotateCamera(float x, float y)
 		pitch = -89.0f;
 	float xR = XMConvertToRadians(yaw);
 	float yR = XMConvertToRadians(pitch);
-	XMFLOAT3 viewVector(
-		cos(xR) * cos(yR),
+	viewDirection = XMVectorSet(cos(xR) * cos(yR),
 		sin(yR),
-		sin(xR) * cos(yR)
-	);
-	XMStoreFloat3(&viewDirection, XMVector3Normalize(XMLoadFloat3(&viewVector)));
-	XMFLOAT3 worldUp(0.0f, 1.0f, 0.0f);
-	right = XMVector3Normalize(XMVector3Cross(XMLoadFloat3(&viewDirection),
-		XMLoadFloat3(&worldUp) ));
+		sin(xR) * cos(yR), 0.0f);
+	
+	
+	XMVECTOR worldUp = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	right = XMVector3Normalize(XMVector3Cross(viewDirection,
+		worldUp));
 
-	up = XMVector3Normalize(XMVector3Cross( right, XMLoadFloat3(&viewDirection) ));
-	XMFLOAT3 rightf, upf;
-	XMStoreFloat3(&rightf, right);
-	XMStoreFloat3(&upf, up);
-	XMVECTOR lower_left_corner = XMLoadFloat3(&position) - half_width * focal_distance * right - half_height * focal_distance * up - focal_distance * XMLoadFloat3(&viewDirection);
-	XMStoreFloat3(&this->lower_left_corner, lower_left_corner);
-	XMStoreFloat3(&this->horizontal, 2 * half_width * focal_distance * right);
-	XMStoreFloat3(&this->vertical, 2 * half_height * focal_distance * up);
+	up = XMVector3Normalize(XMVector3Cross( right, viewDirection));
+	
+	XMVECTOR lower_left_corner = position - half_width * focal_distance * right - half_height * focal_distance * up - focal_distance * viewDirection;
+	this->lower_left_corner = lower_left_corner;
+	this->horizontal = 2 * half_width * focal_distance * right;
+	this->vertical = 2 * half_height * focal_distance * up;
 
 }
 
@@ -92,22 +85,20 @@ void Camera::ModifyFOV(float delta, INT increase)
 	half_width = aspect * half_height;
 	
 	
-	XMVECTOR lower_left_corner = XMLoadFloat3(&position) - half_width * focal_distance * right - half_height * focal_distance * up - focal_distance * XMLoadFloat3(&viewDirection);
-	XMStoreFloat3(&this->lower_left_corner, lower_left_corner);
-	XMStoreFloat3(&horizontal, 2 * half_width * focal_distance * right);
-	XMStoreFloat3(&vertical, 2 * half_height * focal_distance * up);
+	XMVECTOR lower_left_corner = position - half_width * focal_distance * right - half_height * focal_distance * up - focal_distance * viewDirection;
+	this->lower_left_corner =  lower_left_corner;
+	horizontal =  2 * half_width * focal_distance * right;
+	vertical = 2 * half_height * focal_distance * up;
 }
 
 
 
 Ray Camera::GetRayDirection(float u, float v)
 {
-	XMFLOAT3 direction;
-	XMStoreFloat3(&direction,
-		XMVector3Normalize(XMLoadFloat3(&lower_left_corner) + u * XMLoadFloat3(&horizontal) + v * XMLoadFloat3(&vertical) -
-			XMLoadFloat3(&position)));
-	XMFLOAT3 origin = position;
-	Ray r(origin, direction, 0.0f);
+	XMVECTOR direction =
+		XMVector3Normalize(lower_left_corner + u * horizontal + v * vertical - 	position);
+	
+	Ray r(position, direction, 0.0f);
 	return r;
 
 

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-Sphere::Sphere(const XMFLOAT3& c, float radius, Material& material) :
+Sphere::Sphere(const XMVECTOR& c, float radius, Material& material) :
 	center(c), r2(sqrt(radius)), Intersectable(material)
 {}
 
@@ -14,8 +14,8 @@ bool Sphere::Intersect(Ray& ray)
 {
 	
 	float t0, t1;
-	XMVECTOR L = XMLoadFloat3(&center) - XMLoadFloat3(&ray.origin);
-	float tca = XMVectorGetX( XMVector3Dot(L, XMLoadFloat3(&ray.direction)));
+	XMVECTOR L = center - ray.origin;
+	float tca = XMVectorGetX( XMVector3Dot(L, ray.direction));
 	float d2 = XMVectorGetX(XMVector3Dot(L, L)) - tca * tca;
 	if (d2 > r2) return false;
 	float thc = sqrt(r2 - d2);
@@ -38,14 +38,9 @@ bool Sphere::Intersect(Ray& ray)
 
 void Sphere::GetSurfaceData(Surface& surface, Ray& ray) const
 {
-	XMStoreFloat3(&surface.position,
-		XMLoadFloat3(&ray.origin) + ray.t * XMLoadFloat3(&ray.direction)
-	);
-	XMStoreFloat3(&surface.normal,
-		XMVector3Normalize(
-			XMLoadFloat3(&surface.position) - XMLoadFloat3(&center)));
-	surface.tex.x = (1 + atan2(surface.normal.z, surface.normal.x) / XM_PI) * 0.5f;
-	surface.tex.y = acosf(surface.normal.y) / XM_PI;
+	surface.position = ray.origin + ray.t * ray.direction;
+	surface.normal = XMVector3Normalize(surface.position - center);
+	surface.tex = XMVectorSet((1 + atan2(XMVectorGetZ(surface.normal), XMVectorGetX(surface.normal)) / XM_PI) * 0.5f, acosf(XMVectorGetY(surface.normal)) / XM_PI, 0.0f, 0.0f);
 }
 
 

@@ -6,7 +6,7 @@ class Ray
 {
 public:
 	
-	Ray( XMFLOAT3& o,  XMFLOAT3& d, float t, int depth = 0, float tMax = 1000000.0, float tMin = EPSILON);
+	Ray(XMVECTOR& o,  XMVECTOR& d, float t, int depth = 0, float tMax = 1000000.0, float tMin = EPSILON);
 	Ray();
 	~Ray();
 
@@ -15,8 +15,8 @@ public:
 
 public:
     static float EPSILON;
-	XMFLOAT3 origin;
-	XMFLOAT3 direction;
+	XMVECTOR origin;
+	XMVECTOR direction;
 	float t;
 	float tMax;
 	float tMin;

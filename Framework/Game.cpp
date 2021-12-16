@@ -14,16 +14,15 @@ Game::Game(UINT width, UINT height, std::wstring name) :
 
 {
     float aspect = static_cast<float>(width) / static_cast<float>(height);
-    XMFLOAT3 origin(5.0f, 0.0f, 5.0f);
-    XMFLOAT3 lookAt(0.0f, 0.0f, 0.0f);
-    XMFLOAT3 up(0.0f, 1.0f, 0.0f);
-    m_camera = new Camera(XMLoadFloat3(&origin), XMLoadFloat3(&lookAt),
-        XMLoadFloat3(&up), 60.0f, aspect, 1.0f);
+    XMVECTOR origin = XMVectorSet(5.0f, 0.0f, 5.0f, 0.0f);
+    XMVECTOR lookAt = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+    XMVECTOR up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+    m_camera = new Camera(origin, lookAt, up, 60.0f, aspect, 1.0f);
     m_Xprev = static_cast<float>(width) / 2.0f;
     m_Yprev = static_cast<float>(height) / 2.0f;
     m_firstClick = true;
-    m_cameraMovementX = XMFLOAT3(0.0f, 0.0f, 0.0f);
-    m_cameraMovementZ = XMFLOAT3(0.0f, 0.0f, 0.0f);
+    m_cameraMovementX = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+    m_cameraMovementZ = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
     m_fovState = 0;
     m_prevTime = 0.0f;
     m_barrelPower = 1.0f;
@@ -365,47 +364,47 @@ void Game::LoadAssets()
         }
 
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(-1.0f, -0.1f, -4.1f), 0.01f, Material(Material::Type::DIFFUSE, XMFLOAT3(240.0f / 255.0f, 128.0f / 255.0f, 128.0f / 255.0f))
+            XMVectorSet(-1.0f, -0.1f, -4.1f, 0.0f), 0.01f, Material(Material::Type::DIFFUSE, XMVectorSet(240.0f / 255.0f, 128.0f / 255.0f, 128.0f / 255.0f, 0.0f))
         )));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(-1.9f, -0.5f, -4.1f), 0.01f, Material(Material::Type::DIFFUSE, XMFLOAT3(255.0f / 255.0f, 105.0f / 255.0f, 180.0f / 255.0f))
+            XMVectorSet(-1.9f, -0.5f, -4.1f, 0.0f), 0.01f, Material(Material::Type::DIFFUSE, XMVectorSet(255.0f / 255.0f, 105.0f / 255.0f, 180.0f / 255.0f, 0.0f))
         )));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(-1.0f, -1.5f, -4.1f), 0.01f, Material(Material::Type::DIFFUSE, XMFLOAT3(50.0f / 255.0f, 205.0f / 255.0f, 50.0f / 255.0f))
+            XMVectorSet(-1.0f, -1.5f, -4.1f, 0.0f), 0.01f, Material(Material::Type::DIFFUSE, XMVectorSet(50.0f / 255.0f, 205.0f / 255.0f, 50.0f / 255.0f, 0.0f))
         )));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(-1.0f, 1.0f, 4.0f), 0.01f, Material(Material::Type::DIFFUSE, XMFLOAT3(255.0f / 255.0f, 215.0f / 255.0f, 0)))));
+            XMVectorSet(-1.0f, 1.0f, 4.0f, 0.0f), 0.01f, Material(Material::Type::DIFFUSE, XMVectorSet(255.0f / 255.0f, 215.0f / 255.0f, 0.0f, 0.0f)))));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(4.0f, 2.0f, 2.0f), 0.3f, Material(Material::Type::SPECULAR, XMFLOAT3(255.0f / 255.0f, 50.0f / 255.0f, 100.0f / 255.0f)))));
+            XMVectorSet(4.0f, 2.0f, 2.0f, 0.0f), 0.3f, Material(Material::Type::SPECULAR, XMVectorSet(255.0f / 255.0f, 50.0f / 255.0f, 100.0f / 255.0f, 0.0f)))));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(1.0f, 2.0f, 2.0f), 0.3f, Material(Material::Type::SPECULAR, XMFLOAT3(155.0f / 255.0f, 150.0f / 255.0f, 60.0f / 255.0f)))));
+            XMVectorSet(1.0f, 2.0f, 2.0f, 0.0f), 0.3f, Material(Material::Type::SPECULAR, XMVectorSet(155.0f / 255.0f, 150.0f / 255.0f, 60.0f / 255.0f, 0.0f)))));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(-5.0f, 1.0f, 2.0f), 0.2f, Material(Material::Type::SPECULAR, XMFLOAT3(205.0f / 255.0f, 50.0f / 255.0f, 0)))));
+            XMVectorSet(-5.0f, 1.0f, 2.0f, 0.0f), 0.2f, Material(Material::Type::SPECULAR, XMVectorSet(205.0f / 255.0f, 50.0f / 255.0f, 0, 0.0f)))));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(-3.0f, 2.0f, 2.0f), 0.01f, Material(Material::Type::SPECULAR, XMFLOAT3(255.0f / 255.0f, 50.0f / 255.0f, 150.0f / 255.0f)))));
+            XMVectorSet(-3.0f, 2.0f, 2.0f, 0.0f), 0.01f, Material(Material::Type::SPECULAR, XMVectorSet(255.0f / 255.0f, 50.0f / 255.0f, 150.0f / 255.0f, 0.0f)))));
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(2.0f, 0.0f, 2.0f), 1.0f, Material(Material::Type::DIELECTRIC, XMFLOAT3(0.85f, 0.9f, 1.0f), 1.3f, XMFLOAT3(0.7, 0.3, 0.7)))));
+            XMVectorSet(2.0f, 0.0f, 2.0f, 0.0f), 1.0f, Material(Material::Type::DIELECTRIC, XMVectorSet(0.85f, 0.9f, 1.0f, 0.0f), 1.3f, XMVectorSet(0.7, 0.3, 0.7, 0.0f)))));
        
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMFLOAT3(4.0f, -2.0f, 8.0f), 0.5f, Material(Material::Type::DIELECTRIC, XMFLOAT3(0.35f, 0.4f, 1.0f), 1.5f, XMFLOAT3(0.9, 0.8, 0.4)))));
+            XMVectorSet(4.0f, -2.0f, 8.0f, 0.0f), 0.5f, Material(Material::Type::DIELECTRIC, XMVectorSet(0.35f, 0.4f, 1.0f, 0.0f), 1.5f, XMVectorSet(0.9, 0.8, 0.4, 0.0f)))));
 
         
      
 
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Plane(
-            XMFLOAT3(0.0f, -3.0f, 0.0f), XMFLOAT3(0.0f, 1.0f, 0.0f), 40.0f, 40.0f, Material(Material::Type::DIFFUSE, XMFLOAT3(1.0f, 0.0f, 1.0f))
+            XMVectorSet(0.0f, -3.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), 40.0f, 40.0f, Material(Material::Type::DIFFUSE, XMVectorSet(1.0f, 0.0f, 1.0f, 0.0f))
         )));
 
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Torus(
-            0.5f, 0.2f, Material(Material::Type::DIFFUSE, XMFLOAT3(255.0f / 255.0f, 105.0f / 255.0f, 180.0f / 255.0f))
+            0.5f, 0.2f, Material(Material::Type::DIFFUSE, XMVectorSet(255.0f / 255.0f, 105.0f / 255.0f, 180.0f / 255.0f, 0.0f))
         )));
-        m_lights.push_back(Light(XMFLOAT3(-1.0f, 1.f, -4.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f), 10.0f, Light::Type::SPOT, 15 * XM_PI / 180.0f, 5.0f * XM_PI / 180.0f));
-        m_lights.push_back(Light(XMFLOAT3(-1.0f, 2.f, -4.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT3(0.5f, 0.78f, 0.9f), 10.0f, Light::Type::SPOT, 15 * XM_PI / 180.0f, 5.0f * XM_PI / 180.0f));
-        m_lights.push_back(Light(XMFLOAT3(8.0f, 1.5f, -4.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT3(1.0f, 0.0f, 1.0f), 10.0f, Light::Type::SPOT, 45 * XM_PI / 180.0f, 10.0f * XM_PI / 180.0f));
-        m_lights.push_back(Light(XMFLOAT3(-8.0f, 1.5f, -4.0f), XMFLOAT3(0.0f, -1.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 0.0f), 10.0f, Light::Type::SPOT, 50 * XM_PI / 180.0f, 35.0f * XM_PI / 180.0f));
-        m_lights.push_back(Light(XMFLOAT3(2.0f, 4.5f, 0.0f), XMFLOAT3(1.0f, 0.7f, 0.9f), 10.0f, Light::Type::POINT));
-        m_lights.push_back(Light(XMFLOAT3(0.0f, 0.0f, 5.0f), XMFLOAT3(0.3f, 0.76f, 1.0f), 10.0f, Light::Type::POINT));
-        m_lights.push_back(Light(XMFLOAT3(100.0f, 100.0f, 0.0f), XMFLOAT3(0.5, 0.87, 0.93), 0.25f, Light::Type::DIRECTIONAL));
+        m_lights.push_back(Light(XMVectorSet(-1.0f, 1.f, -4.0f, 0.0f), XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 1.0f, 1.0f, 0.f), 10.0f, Light::Type::SPOT, 15 * XM_PI / 180.0f, 5.0f * XM_PI / 180.0f));
+        m_lights.push_back(Light(XMVectorSet(-1.0f, 2.f, -4.0f, 0.0f), XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f), XMVectorSet(0.5f, 0.78f, 0.9f, 0.0f), 10.0f, Light::Type::SPOT, 15 * XM_PI / 180.0f, 5.0f * XM_PI / 180.0f));
+        m_lights.push_back(Light(XMVectorSet(8.0f, 1.5f, -4.0f, 0.0f), XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 0.0f, 1.0f, 0.0f), 10.0f, Light::Type::SPOT, 45 * XM_PI / 180.0f, 10.0f * XM_PI / 180.0f));
+        m_lights.push_back(Light(XMVectorSet(-8.0f, 1.5f, -4.0f, 0.0f), XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f), 10.0f, Light::Type::SPOT, 50 * XM_PI / 180.0f, 35.0f * XM_PI / 180.0f));
+        m_lights.push_back(Light(XMVectorSet(2.0f, 4.5f, 0.0f, 0.0f), XMVectorSet(1.0f, 0.7f, 0.9f, 0.0f), 10.0f, Light::Type::POINT));
+        m_lights.push_back(Light(XMVectorSet(0.0f, 0.0f, 5.0f, 0.0f), XMVectorSet(0.3f, 0.76f, 1.0f, 0.0f), 10.0f, Light::Type::POINT));
+        m_lights.push_back(Light(XMVectorSet(100.0f, 100.0f, 0.0f, 0.0f), XMVectorSet(0.5, 0.87, 0.93, 0.0f), 0.25f, Light::Type::DIRECTIONAL));
 
         const UINT rowPitch = TextureWidth * TexturePixelSize;
         const UINT textureSize = rowPitch * TextureHeight;
@@ -436,41 +435,40 @@ omp_set_num_threads(omp_get_max_threads());
         UINT n = rowPitch * j + i * TexturePixelSize;
       
         srand(12);
-        XMFLOAT3 color(0.0f, 0.0f, 0.0f);
+        XMVECTOR color = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
         for (int s = 0; s < m_samples; s++)
         {
             
             float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
             float u = (float(i) + r) / (static_cast<float>(TextureWidth) - 1.0f);
             float v = (float(j) + r)/ (static_cast<float>(TextureHeight) - 1.0f);
-            XMFLOAT2 uv(u, v);
+            XMVECTOR uv = XMVectorSet(u, v, 0.0f, 0.0f);
             
             // Barrel Distorsion
             if (m_enableBarrel)
             {
-                XMFLOAT2 ndc;
-                XMStoreFloat2(&ndc, XMLoadFloat2(&uv) * 2.0f - XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f));
+                XMVECTOR ndc;
+                ndc = uv * 2.0f - XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
 
-                float theta = atan2(ndc.y, ndc.x);
-                float radius = XMVectorGetX(XMVector2Length(XMLoadFloat2(&ndc)));
+                float theta = atan2(XMVectorGetY(ndc), XMVectorGetX(ndc));
+                float radius = XMVectorGetX(XMVector2Length(ndc));
                 radius = pow(radius, m_barrelPower);
-                ndc.x = radius * cos(theta);
-                ndc.y = radius * sin(theta);
-                uv = XMFLOAT2((ndc.x + 1.0) * 0.5f, (ndc.y + 1.0) * 0.5f);
+                ndc = XMVectorSet(radius * cos(theta), radius * sin(theta), 0.0f, 0.0f);
+                uv = XMVectorSet((XMVectorGetX(ndc) + 1.0) * 0.5f, (XMVectorGetY(ndc) + 1.0) * 0.5f, 0.0f, 0.0f);
             }
             
 
-            Ray ray = m_camera->GetRayDirection(uv.x, uv.y);
+            Ray ray = m_camera->GetRayDirection(XMVectorGetX(uv), XMVectorGetY(uv));
            
-            XMFLOAT3 result = ClosestHitShade(ray);
-            XMVECTOR colorV = XMLoadFloat3(&color) + XMLoadFloat3(&result);
-            XMStoreFloat3(&color, colorV);
+            XMVECTOR result = ClosestHitShade(ray);
+            XMVECTOR colorV = color + result;
+            color = colorV;
 
             
         }
-        pData[n] = min(1.0f, color.x / m_samples) * 255.0f ;
-        pData[n + 1] = min(1.0f, color.y / m_samples) * 255.0f;
-        pData[n + 2] = min(1.0f, color.z / m_samples) * 255.0f;
+        pData[n] = min(1.0f, XMVectorGetX(color) / m_samples) * 255.0f ;
+        pData[n + 1] = min(1.0f, XMVectorGetY(color) / m_samples) * 255.0f;
+        pData[n + 2] = min(1.0f, XMVectorGetZ(color) / m_samples) * 255.0f;
         pData[n + 3] = 255;
         
         
@@ -499,9 +497,9 @@ bool Game::Trace(Ray& ray,const Intersectable*& object)
     return (object != nullptr);
 }
 
-XMFLOAT3 Game::ClosestHitShade(Ray& ray)
+XMVECTOR Game::ClosestHitShade(Ray& ray)
 {
-    XMFLOAT3 color(0.6, 1.0f, 1.0f);
+    XMVECTOR color = XMVectorSet(0.6, 1.0f, 1.0f, 0.0f);
     XMVECTOR finalColor = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
     const Intersectable* object = nullptr;
     if (ray.depth > m_depth)
@@ -511,9 +509,9 @@ XMFLOAT3 Game::ClosestHitShade(Ray& ray)
        
         Surface surf;
         object->GetSurfaceData(surf, ray);
-        XMVECTOR matColor = XMLoadFloat3(&object->mat.color) * ((m_texturing > 0) ? XMLoadFloat3(&GetTexture(surf.tex)) : XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f));
-        XMVECTOR N = XMLoadFloat3(&surf.normal);
-        XMVECTOR P = XMLoadFloat3(&surf.position);
+        XMVECTOR matColor = object->mat.color * ((m_texturing > 0) ? GetTexture(surf.tex) : XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f));
+        XMVECTOR N = surf.normal;
+        XMVECTOR P = surf.position;
         
         if (object->mat.type == Material::Type::DIFFUSE)
         {
@@ -522,13 +520,13 @@ XMFLOAT3 Game::ClosestHitShade(Ray& ray)
             {
 
                 Light light = m_lights[i];
-                XMVECTOR L = XMLoadFloat3(&light.position) - P;
+                XMVECTOR L = light.position - P;
                 float distance = XMVectorGetX(XMVector3Length(L));
                 L = XMVector3Normalize(L);
-                XMFLOAT3 Lf;
-                XMStoreFloat3(&Lf, L);
+                /*XMFLOAT3 Lf;
+                XMStoreFloat3(&Lf, L);*/
                 distance = light.type == Light::Type::DIRECTIONAL ? 10e9 : distance;
-                Ray shadowRay(surf.position, Lf, Ray::EPSILON, 0, distance, Ray::EPSILON);
+                Ray shadowRay(surf.position, L, Ray::EPSILON, 0, distance, Ray::EPSILON);
                 float shadowAttenuation = AnyHit(shadowRay) ? 0.0f : 1.0f;
                 float totalAttenuation = light.CosineAttenuation(surf.position, surf.normal) * shadowAttenuation;
                 if (light.type == Light::Type::POINT)
@@ -537,9 +535,9 @@ XMFLOAT3 Game::ClosestHitShade(Ray& ray)
                 {
                     totalAttenuation *= (light.Attenuate(surf.position) * light.SpotAttenuation(surf.position));
                 }
-                finalColor += matColor * XMLoadFloat3(&light.color) * light.intensity *
+                finalColor += matColor * light.color * light.intensity *
                     totalAttenuation;
-                XMStoreFloat3(&color, finalColor);
+                color = finalColor;
             }
         }
             
@@ -548,8 +546,8 @@ XMFLOAT3 Game::ClosestHitShade(Ray& ray)
         {
             ray.ReflectRay(surf);
             color = ClosestHitShade(ray);
-            finalColor = XMLoadFloat3(&color) * matColor;
-            XMStoreFloat3(&color, finalColor);
+            finalColor = color * matColor;
+            color = finalColor;
             
            
         }
@@ -558,7 +556,7 @@ XMFLOAT3 Game::ClosestHitShade(Ray& ray)
             float ior = object->mat.I_IOR;
             float n1 = 1.0f;
             float n2 = object->mat.IOR;
-            XMVECTOR dir = XMLoadFloat3(&ray.direction);
+            XMVECTOR dir = ray.direction;
             float cosThetaI = XMVectorGetX(XMVector3Dot(N, -dir));
             bool inside = false;
             if (cosThetaI < 0) // We are inside the object reverse the normal and IOR
@@ -566,8 +564,8 @@ XMFLOAT3 Game::ClosestHitShade(Ray& ray)
                 inside = true;
                 ior = object->mat.IOR;
                 std::swap(n1, n2);
-                XMStoreFloat3(&surf.normal, -N);
-                N = XMLoadFloat3(&surf.normal);
+                surf.normal = -N;
+                N = surf.normal;
                 cosThetaI = -cosThetaI;
             }
             float ior2 = ior * ior;
@@ -596,11 +594,10 @@ XMFLOAT3 Game::ClosestHitShade(Ray& ray)
             XMVECTOR reflectColor = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
             Ray reflRay = ray;
             reflRay.ReflectRay(surf);
-            /*XMVECTOR origin = P +  Ray::EPSILON * N;
-            XMStoreFloat3(&reflRay.origin, origin);*/
+           
             color = ClosestHitShade(reflRay);
-            reflectColor += Fr * XMLoadFloat3(&color) * matColor;
-            if (inside) reflectColor = XMVectorMultiply(reflectColor, XMVectorExpE(-reflRay.t * XMLoadFloat3(&object->mat.extinction)));
+            reflectColor += Fr * color * matColor;
+            if (inside) reflectColor = XMVectorMultiply(reflectColor, XMVectorExpE(-reflRay.t * object->mat.extinction));
             XMVECTOR refractedColor = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
             if (Ft > 0)
             { 
@@ -608,17 +605,17 @@ XMFLOAT3 Game::ClosestHitShade(Ray& ray)
                 Ray refrRay = ray;
                 refrRay.RefractRay(surf, cosThetaI, ior, k, !inside);
                 XMVECTOR origin = P - Ray::EPSILON * N;
-                XMStoreFloat3(&refrRay.origin, origin);
+                refrRay.origin = origin;
                 refrRay.t = 0.0f;
                 color = ClosestHitShade(refrRay);
-                refractedColor += Ft * XMLoadFloat3(&color) * matColor;
+                refractedColor += Ft * color * matColor;
                 float distance = refrRay.t;
-                if(!inside) refractedColor = XMVectorMultiply(refractedColor, XMVectorExpE(-distance * XMLoadFloat3(&object->mat.extinction)));
+                if(!inside) refractedColor = XMVectorMultiply(refractedColor, XMVectorExpE(-distance * object->mat.extinction));
                 
 
             }
 
-            XMStoreFloat3(&color, reflectColor + refractedColor);
+            color = reflectColor + refractedColor;
            
            
         }
@@ -646,15 +643,15 @@ bool Game::AnyHit(Ray& ray)
     
 
 }
-XMFLOAT3 Game::GetTexture(XMFLOAT2& tex)
+XMVECTOR Game::GetTexture(XMVECTOR& tex)
 {
     float size = 8;
-    UINT x = (UINT)(tex.x * size);
-    UINT y = (UINT)(tex.y * size);
+    UINT x = (UINT)(XMVectorGetX(tex) * size);
+    UINT y = (UINT)(XMVectorGetY(tex) * size);
     if (x % 2 == y % 2)
-        return XMFLOAT3(1.0f, 1.0f, 1.0f);
+        return XMVectorSet(1.0f, 1.0f, 1.0f, 0.0f);
 
-    return XMFLOAT3(0.5f, 0.5f, 0.5f);
+    return XMVectorSet(0.5f, 0.5f, 0.5f, 0.0f);
 }
 // Update frame-based values.
 void Game::OnUpdate()
@@ -662,7 +659,7 @@ void Game::OnUpdate()
     m_timer.Tick();
     CalculateFrameStats();
     float delta = static_cast<float>(m_timer.GetElapsedSeconds());
-    m_camera->MoveCamera(XMLoadFloat3(&m_cameraMovementX), XMLoadFloat3 (&m_cameraMovementZ), delta);
+    m_camera->MoveCamera(m_cameraMovementX, m_cameraMovementZ, delta);
     m_camera->ModifyFOV(delta, m_fovState);
     m_barrelPower += m_barrelState * delta;
     ThrowIfFailed(m_commandAllocator->Reset());
@@ -723,16 +720,16 @@ void Game::OnKeyDown(UINT8 key)
     switch (key)
     {
     case 'W':
-        XMStoreFloat3(&m_cameraMovementZ, -XMLoadFloat3(&m_camera->viewDirection));
+        m_cameraMovementZ = -m_camera->viewDirection;
         break;
     case 'S' :
-        XMStoreFloat3(&m_cameraMovementZ, XMLoadFloat3(&m_camera->viewDirection));
+        m_cameraMovementZ = m_camera->viewDirection;
         break;
     case 'A':
-        XMStoreFloat3(&m_cameraMovementX, -m_camera->right);
+        m_cameraMovementX = -m_camera->right;
         break;
     case 'D':
-        XMStoreFloat3(&m_cameraMovementX, m_camera->right);
+        m_cameraMovementX = m_camera->right;
         break;
     case VK_UP:
         m_fovState = -1;
@@ -758,16 +755,16 @@ void Game::OnKeyUp(UINT8 key)
     switch (key)
     {
     case 'W':
-        m_cameraMovementZ = XMFLOAT3(0.0f, 0.0f, 0.0f);
+        m_cameraMovementZ = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
         break;
     case 'S':
-        m_cameraMovementZ = XMFLOAT3(0.0f, 0.0f, 0.0f);
+        m_cameraMovementZ = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
         break;
     case 'A':
-        m_cameraMovementX = XMFLOAT3(0.0f, 0.0f, 0.0f);
+        m_cameraMovementX = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
         break;
     case 'D':
-        m_cameraMovementX = XMFLOAT3(0.0f, 0.0f, 0.0f);
+        m_cameraMovementX = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
         break;
     case VK_UP:
         m_fovState = 0;

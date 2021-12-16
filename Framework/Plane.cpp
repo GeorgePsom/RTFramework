@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-Plane::Plane(XMFLOAT3& c, XMFLOAT3& n, float x, float z, Material& m) : center(c), xSize(x), zSize(z), mat(m)
+Plane::Plane(XMVECTOR& c, XMVECTOR& n, float x, float z, Material& m) : center(c), xSize(x), zSize(z), mat(m)
 {
-    XMStoreFloat3(&normal, XMVector3Normalize(XMLoadFloat3(&n)));
+    normal = XMVector3Normalize(n);
 }
 
 Plane::~Plane()
@@ -13,16 +13,16 @@ bool Plane::Intersect(Ray& ray)
 {
     
     float t;
-    float NdotD = XMVectorGetX(XMVector3Dot(XMLoadFloat3(&ray.direction), XMLoadFloat3(&normal)));
+    float NdotD = XMVectorGetX(XMVector3Dot(ray.direction, normal));
     if (fabs(NdotD) > 1e-6) {
-        XMVECTOR centerOrigin = XMLoadFloat3(&center) - XMLoadFloat3(&ray.origin);
-        t = XMVectorGetX(XMVector3Dot(centerOrigin, XMLoadFloat3(&normal))) / NdotD;
-        XMVECTOR p = XMLoadFloat3(&ray.origin) + t * XMLoadFloat3(&ray.direction);
+        XMVECTOR centerOrigin = center - ray.origin;
+        t = XMVectorGetX(XMVector3Dot(centerOrigin, normal)) / NdotD;
+        XMVECTOR p = ray.origin + t * ray.direction;
         // Calculate tangent binormal
-        XMFLOAT3 tang(0.0f, 0.0f, 1.0f);
-        XMVECTOR binormal = XMVector3Normalize(XMVector3Cross(XMLoadFloat3(&normal), XMLoadFloat3(&tang)));
-        XMVECTOR tangent = XMVector3Normalize(XMVector3Cross(binormal, XMLoadFloat3(&normal)));
-        XMVECTOR pCenter = XMLoadFloat3(&center) - p;
+        XMVECTOR tang = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+        XMVECTOR binormal = XMVector3Normalize(XMVector3Cross(normal, tang));
+        XMVECTOR tangent = XMVector3Normalize(XMVector3Cross(binormal,normal));
+        XMVECTOR pCenter = center - p;
         float x = XMVectorGetX(XMVector3Dot(pCenter, tangent));
         float z = XMVectorGetX(XMVector3Dot(pCenter, binormal));
         if (t >= 0 && fabs(x) <= xSize/2.0f && fabs(z) <= zSize/2.0f)
@@ -37,17 +37,15 @@ bool Plane::Intersect(Ray& ray)
 
 void Plane::GetSurfaceData(Surface& surf, Ray& ray) const
 {
-    XMStoreFloat3(&surf.position,
-        XMLoadFloat3(&ray.origin) + ray.t * XMLoadFloat3(&ray.direction)
-    );
-    XMStoreFloat3(&surf.normal, XMLoadFloat3(&normal));
-    XMFLOAT3 tang(0.0f, 0.0f, 1.0f);
-    XMVECTOR binormal = XMVector3Normalize(XMVector3Cross(XMLoadFloat3(&normal), XMLoadFloat3(&tang)));
-    XMVECTOR tangent = XMVector3Normalize(XMVector3Cross(binormal, XMLoadFloat3(&normal)));
-    XMVECTOR pCenter = XMLoadFloat3(&center) - XMLoadFloat3(&surf.position);
+    surf.position = ray.origin + ray.t * ray.direction;
+    surf.normal = normal;
+    XMVECTOR tang = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+    XMVECTOR binormal = XMVector3Normalize(XMVector3Cross(normal, tang));
+    XMVECTOR tangent = XMVector3Normalize(XMVector3Cross(binormal, normal));
+    XMVECTOR pCenter = center - surf.position;
     float x = XMVectorGetX(XMVector3Dot(pCenter, tangent));
     float z = XMVectorGetX(XMVector3Dot(pCenter, binormal));
    
-    surf.tex = XMFLOAT2((x / xSize) * 0.5f + 0.5f, (z / zSize)* 0.5f + 0.5f);
+    surf.tex = XMVectorSet((x / xSize) * 0.5f + 0.5f, (z / zSize)* 0.5f + 0.5f, 0.0f, 0.0f);
   
 }

@@ -9,8 +9,8 @@ Torus::~Torus()
 
 bool Torus::Intersect(Ray& ray)
 {
-	double x1 = ray.origin.x; double y1 = ray.origin.y; double z1 = ray.origin.z;
-	double d1 = ray.direction.x; double d2 = ray.direction.y; double d3 = ray.direction.z;
+	double x1 = XMVectorGetX(ray.origin); double y1 = XMVectorGetY(ray.origin); double z1 = XMVectorGetZ(ray.origin);
+	double d1 = XMVectorGetX(ray.direction); double d2 = XMVectorGetY(ray.direction); double d3 = XMVectorGetZ(ray.direction);
 
 	double coeffs[5];	
 	double roots[4];
@@ -59,31 +59,24 @@ bool Torus::Intersect(Ray& ray)
 
 void Torus::GetSurfaceData(Surface& surf, Ray& ray) const
 {
-	XMStoreFloat3(&surf.position,
-		XMLoadFloat3(&ray.origin) + ray.t * XMLoadFloat3(&ray.direction)
-	);
+	surf.position = ray.origin + ray.t * ray.direction;
 	double param_squared = a * a + b * b;
 
-	double x = surf.position.x;
-	double y = surf.position.y;
-	double z = surf.position.z;
+	double x = XMVectorGetX(surf.position);
+	double y = XMVectorGetY(surf.position);
+	double z = XMVectorGetZ(surf.position);
 	double sum_squared = x * x + y * y + z * z;
 
-	surf.normal.x = 4.0 * x * (sum_squared - param_squared);
-	surf.normal.y = 4.0 * y * (sum_squared - param_squared + 2.0 * a * a);
-	surf.normal.z = 4.0 * z * (sum_squared - param_squared);
-	XMStoreFloat3(&surf.normal, XMVector3Normalize(XMLoadFloat3(&surf.normal)));
+	surf.normal = XMVectorSet(4.0 * x * (sum_squared - param_squared), 4.0 * y * (sum_squared - param_squared + 2.0 * a * a), 4.0 * z * (sum_squared - param_squared), 0.0f);
+	surf.normal = XMVector3Normalize(surf.normal);
 	XMVECTOR tangent = XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f);
 	
-	float theta = XMVectorGetX(XMVector3Dot(XMLoadFloat3(&surf.normal), XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f)));
-	//XMVECTOR rotatedTangent = XMVectorSet(1.0 * cosf(theta), 0.0f, -1.0f * sinf(theta), 0.0f);
-	///*float thetaUnormalized = XMVectorGetX(XMVector3Dot(XMLoadFloat3(&surf.normal), (XMLoadFloat3(&surf.position))));*/
-	//XMVECTOR centralPoint = rotatedTangent * a;
-	//XMVECTOR PCentral = XMVector3Normalize(XMLoadFloat3(&surf.position) - centralPoint);
-	float phi = XMVectorGetX(XMVector3Dot(XMLoadFloat3(&surf.normal), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)));
+	float theta = XMVectorGetX(XMVector3Dot(surf.normal, XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f)));
+	
+	float phi = XMVectorGetX(XMVector3Dot(surf.normal, XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)));
 	theta = acosf(theta) * 180.0f / XM_PI;
 	phi = acosf(phi) * 180.0f / XM_PI;
-	surf.tex = XMFLOAT2(theta / 360.0f, phi / 360.0f );
+	surf.tex = XMVectorSet(theta / 360.0f, phi / 360.0f, 0.0f, 0.0f );
 }
 
 int Torus::SolveQuartic(double c[5], double s[4])

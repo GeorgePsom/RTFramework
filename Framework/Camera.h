@@ -25,12 +25,12 @@ public:
 
 	};
 public:
-	XMFLOAT3 position;
-	XMFLOAT3 viewDirection;
+	XMVECTOR position;
+	XMVECTOR viewDirection;
 	float focal_length;
 	float aspect;
-	XMFLOAT3 lower_left_corner;
-	XMFLOAT3 horizontal, vertical;
+	XMVECTOR lower_left_corner;
+	XMVECTOR horizontal, vertical;
 	float FOV;
 	float width, height;
 	XMVECTOR right;

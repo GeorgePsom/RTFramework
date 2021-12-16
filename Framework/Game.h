@@ -59,7 +59,7 @@ private:
 	ComPtr<ID3D12Resource> m_texture;
 
 	Camera* m_camera;
-	XMFLOAT3 m_cameraMovementX, m_cameraMovementZ;
+	XMVECTOR m_cameraMovementX, m_cameraMovementZ;
 	UINT m_Xprev, m_Yprev;
 	float m_AngleX, m_AngleY;
 	bool m_firstClick;
@@ -88,9 +88,9 @@ private:
 	void LoadAssets();
 	void GenerateTextureData();
 	bool Trace(Ray& ray, const Intersectable*& object);
-	XMFLOAT3 ClosestHitShade(Ray& ray);
+	XMVECTOR ClosestHitShade(Ray& ray);
 	bool AnyHit(Ray& ray);
-	XMFLOAT3 GetTexture(XMFLOAT2& tex);
+	XMVECTOR GetTexture(XMVECTOR& tex);
 	void CalculateFrameStats();
 	void PopulateCommandList();
 	void WaitForPreviousFrame();
