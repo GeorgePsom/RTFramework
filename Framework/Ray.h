@@ -17,6 +17,7 @@ public:
     static float EPSILON;
 	XMVECTOR origin;
 	XMVECTOR direction;
+	XMVECTOR bary;
 	float t;
 	float tMax;
 	float tMin;

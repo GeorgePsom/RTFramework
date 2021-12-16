@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-Plane::Plane(XMVECTOR& c, XMVECTOR& n, float x, float z, Material& m) : center(c), xSize(x), zSize(z), mat(m)
+Plane::Plane(XMVECTOR& c, XMVECTOR& n, float x, float z, Material& m) : center(c), xSize(x), zSize(z), Intersectable(m)
 {
     normal = XMVector3Normalize(n);
 }

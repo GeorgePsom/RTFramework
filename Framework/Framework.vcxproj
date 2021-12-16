@@ -74,21 +74,25 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
+    <PreLinkEventUseInBuild>false</PreLinkEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
+    <PreLinkEventUseInBuild>false</PreLinkEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
+    <PreLinkEventUseInBuild>false</PreLinkEventUseInBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
+    <PreLinkEventUseInBuild>false</PreLinkEventUseInBuild>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -109,6 +113,15 @@
       <DelayLoadDLLs>d3d12.dll</DelayLoadDLLs>
       <AdditionalLibraryDirectories>$(SolutionDir)Framework\Libraries\assimp-3.1.1\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d "$(SolutionDir)Framework\Libraries\assimp-3.1.1\bin64\assimp.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>xcopy /y /d "$(SolutionDir)Framework\Libraries\assimp-3.1.1\bin64\assimp.dll" "$(OutDir)"</Command>
+    </PreLinkEvent>
+    <PreBuildEvent>
+      <Command>xcopy /y /d "$(SolutionDir)Framework\Libraries\assimp-3.1.1\bin64\assimp.dll" "$(OutDir)"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -133,6 +146,15 @@
       <DelayLoadDLLs>d3d12.dll</DelayLoadDLLs>
       <AdditionalLibraryDirectories>$(SolutionDir)Framework\Libraries\assimp-3.1.1\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d "$(SolutionDir)Framework\Libraries\assimp-3.1.1\bin64\assimp.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>xcopy /y /d "$(SolutionDir)Framework\Libraries\assimp-3.1.1\bin64\assimp.dll" "$(OutDir)"</Command>
+    </PreLinkEvent>
+    <PreBuildEvent>
+      <Command>xcopy /y /d "$(SolutionDir)Framework\Libraries\assimp-3.1.1\bin64\assimp.dll" "$(OutDir)"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -153,6 +175,15 @@
       <DelayLoadDLLs>d3d12.dll</DelayLoadDLLs>
       <AdditionalLibraryDirectories>$(SolutionDir)Framework\Libraries\assimp-3.1.1\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d "$(SolutionDir)Framework\Libraries\assimp-3.1.1\bin64\assimp.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>xcopy /y /d "$(SolutionDir)Framework\Libraries\assimp-3.1.1\bin64\assimp.dll" "$(OutDir)"</Command>
+    </PreLinkEvent>
+    <PreBuildEvent>
+      <Command>xcopy /y /d "$(SolutionDir)Framework\Libraries\assimp-3.1.1\bin64\assimp.dll" "$(OutDir)"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -177,6 +208,15 @@
       <DelayLoadDLLs>d3d12.dll</DelayLoadDLLs>
       <AdditionalLibraryDirectories>$(SolutionDir)Framework\Libraries\assimp-3.1.1\lib64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y /d "$(SolutionDir)Framework\Libraries\assimp-3.1.1\bin64\assimp.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
+    <PreLinkEvent>
+      <Command>xcopy /y /d "$(SolutionDir)Framework\Libraries\assimp-3.1.1\bin64\assimp.dll" "$(OutDir)"</Command>
+    </PreLinkEvent>
+    <PreBuildEvent>
+      <Command>xcopy /y /d "$(SolutionDir)Framework\Libraries\assimp-3.1.1\bin64\assimp.dll" "$(OutDir)"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
@@ -194,6 +234,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Torus.cpp" />
+    <ClCompile Include="Triangle.cpp" />
     <ClCompile Include="Win32Application.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -205,6 +246,7 @@
     <ClInclude Include="Intersectable.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="Plane.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Sphere.h" />
@@ -212,6 +254,7 @@
     <ClInclude Include="StepTimer.h" />
     <ClInclude Include="Surface.h" />
     <ClInclude Include="Torus.h" />
+    <ClInclude Include="Triangle.h" />
     <ClInclude Include="Win32Application.h" />
   </ItemGroup>
   <ItemGroup>
@@ -246,6 +289,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Libraries\assimp-3.1.1\bin64\assimp.dll" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

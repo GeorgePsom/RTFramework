@@ -24,6 +24,11 @@
 #include <cstdlib>
 #include <ctime>
 
+#include <assimp\Importer.hpp>
+#include <assimp\scene.h>
+#include <assimp\postprocess.h>
+
+
 #include "StepTimer.h"
 #include "Camera.h"
 #include "Surface.h"
@@ -33,6 +38,8 @@
 #include "Light.h"
 #include "Plane.h"
 #include "Sphere.h"
+#include "Triangle.h"
+#include "Mesh.h"
 #include "Torus.h"
 
 

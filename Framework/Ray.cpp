@@ -10,10 +10,13 @@ Ray::Ray( XMVECTOR& o,  XMVECTOR& d, float t, int depth, float tmax, float tmin)
 	direction = d;
 	this->t = t;
 	this->depth = depth;
+	bary = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 Ray::Ray()
 {
+	bary = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+
 }
 
 Ray::~Ray()

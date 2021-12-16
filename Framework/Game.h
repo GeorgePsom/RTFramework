@@ -59,6 +59,7 @@ private:
 	ComPtr<ID3D12Resource> m_texture;
 
 	Camera* m_camera;
+	aiMesh* m_pMesh;
 	XMVECTOR m_cameraMovementX, m_cameraMovementZ;
 	UINT m_Xprev, m_Yprev;
 	float m_AngleX, m_AngleY;

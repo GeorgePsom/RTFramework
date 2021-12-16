@@ -31,11 +31,14 @@ Game::Game(UINT width, UINT height, std::wstring name) :
     m_enableBarrel = -1.0f;
     m_texturing = -1.0f;
     m_samples = 1;
-    m_depth = 3;
+    m_depth = 1;
 }
 
 void Game::OnInit()
 {
+    
+
+
     LoadPipeline();
     LoadAssets();
 }
@@ -387,24 +390,36 @@ void Game::LoadAssets()
        
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
             XMVectorSet(4.0f, -2.0f, 8.0f, 0.0f), 0.5f, Material(Material::Type::DIELECTRIC, XMVectorSet(0.35f, 0.4f, 1.0f, 0.0f), 1.5f, XMVectorSet(0.9, 0.8, 0.4, 0.0f)))));
-
-        
-     
-
+       
+       
         m_geometry.push_back(std::unique_ptr<Intersectable>(new Plane(
             XMVectorSet(0.0f, -3.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), 40.0f, 40.0f, Material(Material::Type::DIFFUSE, XMVectorSet(1.0f, 0.0f, 1.0f, 0.0f))
         )));
 
-        m_geometry.push_back(std::unique_ptr<Intersectable>(new Torus(
+        /*m_geometry.push_back(std::unique_ptr<Intersectable>(new Torus(
             0.5f, 0.2f, Material(Material::Type::DIFFUSE, XMVectorSet(255.0f / 255.0f, 105.0f / 255.0f, 180.0f / 255.0f, 0.0f))
-        )));
-        m_lights.push_back(Light(XMVectorSet(-1.0f, 1.f, -4.0f, 0.0f), XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 1.0f, 1.0f, 0.f), 10.0f, Light::Type::SPOT, 15 * XM_PI / 180.0f, 5.0f * XM_PI / 180.0f));
+        )));*/
+
+       /* m_geometry.push_back(std::unique_ptr<Intersectable>(new Triangle(
+            { XMVectorSet(-2.0f, -1.0f, -2.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) },
+            { XMVectorSet(2.0f, -1.0f, -2.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) },
+            { XMVectorSet(2.0f, -1.0f, 2.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) },
+            Material(Material::Type::DIFFUSE, XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f))
+        )));*/
+        XMMATRIX rotation = XMMatrixRotationAxis(XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), -0.5f * XM_PI);
+        XMMATRIX translation = XMMatrixTranslation(-1.0f, 2.0f, 0.0f);
+        XMMATRIX scale = XMMatrixScaling(0.01f, 0.01f, 0.01f);
+        XMMATRIX obj = XMMatrixIdentity();
+        XMMATRIX objToWorld = obj  * rotation * scale * translation;
+        
+        Mesh* bunny = new Mesh(objToWorld, Material(Material::Type::DIFFUSE, XMVectorSet(50.0f / 255.0f, 205.0f / 255.0f, 50.0f / 255.0f, 0.0f)), m_geometry);
+       /* m_lights.push_back(Light(XMVectorSet(-1.0f, 1.f, -4.0f, 0.0f), XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 1.0f, 1.0f, 0.f), 10.0f, Light::Type::SPOT, 15 * XM_PI / 180.0f, 5.0f * XM_PI / 180.0f));
         m_lights.push_back(Light(XMVectorSet(-1.0f, 2.f, -4.0f, 0.0f), XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f), XMVectorSet(0.5f, 0.78f, 0.9f, 0.0f), 10.0f, Light::Type::SPOT, 15 * XM_PI / 180.0f, 5.0f * XM_PI / 180.0f));
         m_lights.push_back(Light(XMVectorSet(8.0f, 1.5f, -4.0f, 0.0f), XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 0.0f, 1.0f, 0.0f), 10.0f, Light::Type::SPOT, 45 * XM_PI / 180.0f, 10.0f * XM_PI / 180.0f));
         m_lights.push_back(Light(XMVectorSet(-8.0f, 1.5f, -4.0f, 0.0f), XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f), 10.0f, Light::Type::SPOT, 50 * XM_PI / 180.0f, 35.0f * XM_PI / 180.0f));
-        m_lights.push_back(Light(XMVectorSet(2.0f, 4.5f, 0.0f, 0.0f), XMVectorSet(1.0f, 0.7f, 0.9f, 0.0f), 10.0f, Light::Type::POINT));
+        */m_lights.push_back(Light(XMVectorSet(2.0f, 4.5f, 0.0f, 0.0f), XMVectorSet(1.0f, 0.7f, 0.9f, 0.0f), 10.0f, Light::Type::POINT));
         m_lights.push_back(Light(XMVectorSet(0.0f, 0.0f, 5.0f, 0.0f), XMVectorSet(0.3f, 0.76f, 1.0f, 0.0f), 10.0f, Light::Type::POINT));
-        m_lights.push_back(Light(XMVectorSet(100.0f, 100.0f, 0.0f, 0.0f), XMVectorSet(0.5, 0.87, 0.93, 0.0f), 0.25f, Light::Type::DIRECTIONAL));
+        /*m_lights.push_back(Light(XMVectorSet(100.0f, 100.0f, 0.0f, 0.0f), XMVectorSet(0.5, 0.87, 0.93, 0.0f), 0.25f, Light::Type::DIRECTIONAL));*/
 
         const UINT rowPitch = TextureWidth * TexturePixelSize;
         const UINT textureSize = rowPitch * TextureHeight;
@@ -523,11 +538,10 @@ XMVECTOR Game::ClosestHitShade(Ray& ray)
                 XMVECTOR L = light.position - P;
                 float distance = XMVectorGetX(XMVector3Length(L));
                 L = XMVector3Normalize(L);
-                /*XMFLOAT3 Lf;
-                XMStoreFloat3(&Lf, L);*/
                 distance = light.type == Light::Type::DIRECTIONAL ? 10e9 : distance;
                 Ray shadowRay(surf.position, L, Ray::EPSILON, 0, distance, Ray::EPSILON);
                 float shadowAttenuation = AnyHit(shadowRay) ? 0.0f : 1.0f;
+                //float shadowAttenuation = 1.0f;
                 float totalAttenuation = light.CosineAttenuation(surf.position, surf.normal) * shadowAttenuation;
                 if (light.type == Light::Type::POINT)
                     totalAttenuation *= light.Attenuate(surf.position);
