@@ -40,6 +40,7 @@
 #include "Sphere.h"
 #include "Triangle.h"
 #include "Mesh.h"
+#include "BVH.h"
 #include "Torus.h"
 
 

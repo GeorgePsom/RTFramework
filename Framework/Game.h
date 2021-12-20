@@ -75,7 +75,8 @@ private:
 	StepTimer m_timer;
 	float m_prevTime;
 	std::vector<Light> m_lights;
-	std::vector<std::unique_ptr<Intersectable>> m_geometry;
+	std::vector<std::shared_ptr<Intersectable>> m_geometry;
+	BVH* m_BVH;
 	std::vector<UINT8> m_rtOutput;
 
 

@@ -43,5 +43,10 @@ void Sphere::GetSurfaceData(Surface& surface, Ray& ray) const
 	surface.tex = XMVectorSet((1 + atan2(XMVectorGetZ(surface.normal), XMVectorGetX(surface.normal)) / XM_PI) * 0.5f, acosf(XMVectorGetY(surface.normal)) / XM_PI, 0.0f, 0.0f);
 }
 
+void Sphere::CalculateAABB(XMFLOAT3& pMin, XMFLOAT3& pMax) const
+{
+	
+}
+
 
 

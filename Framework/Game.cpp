@@ -366,43 +366,57 @@ void Game::LoadAssets()
             ThrowIfFailed(HRESULT_FROM_WIN32(GetLastError()));
         }
 
-        m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMVectorSet(-1.0f, -0.1f, -4.1f, 0.0f), 0.01f, Material(Material::Type::DIFFUSE, XMVectorSet(240.0f / 255.0f, 128.0f / 255.0f, 128.0f / 255.0f, 0.0f))
-        )));
-        m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMVectorSet(-1.9f, -0.5f, -4.1f, 0.0f), 0.01f, Material(Material::Type::DIFFUSE, XMVectorSet(255.0f / 255.0f, 105.0f / 255.0f, 180.0f / 255.0f, 0.0f))
-        )));
-        m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMVectorSet(-1.0f, -1.5f, -4.1f, 0.0f), 0.01f, Material(Material::Type::DIFFUSE, XMVectorSet(50.0f / 255.0f, 205.0f / 255.0f, 50.0f / 255.0f, 0.0f))
-        )));
-        m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMVectorSet(-1.0f, 1.0f, 4.0f, 0.0f), 0.01f, Material(Material::Type::DIFFUSE, XMVectorSet(255.0f / 255.0f, 215.0f / 255.0f, 0.0f, 0.0f)))));
-        m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMVectorSet(4.0f, 2.0f, 2.0f, 0.0f), 0.3f, Material(Material::Type::SPECULAR, XMVectorSet(255.0f / 255.0f, 50.0f / 255.0f, 100.0f / 255.0f, 0.0f)))));
-        m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMVectorSet(1.0f, 2.0f, 2.0f, 0.0f), 0.3f, Material(Material::Type::SPECULAR, XMVectorSet(155.0f / 255.0f, 150.0f / 255.0f, 60.0f / 255.0f, 0.0f)))));
-        m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMVectorSet(-5.0f, 1.0f, 2.0f, 0.0f), 0.2f, Material(Material::Type::SPECULAR, XMVectorSet(205.0f / 255.0f, 50.0f / 255.0f, 0, 0.0f)))));
-        m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMVectorSet(-3.0f, 2.0f, 2.0f, 0.0f), 0.01f, Material(Material::Type::SPECULAR, XMVectorSet(255.0f / 255.0f, 50.0f / 255.0f, 150.0f / 255.0f, 0.0f)))));
-        m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMVectorSet(2.0f, 0.0f, 2.0f, 0.0f), 1.0f, Material(Material::Type::DIELECTRIC, XMVectorSet(0.85f, 0.9f, 1.0f, 0.0f), 1.3f, XMVectorSet(0.7, 0.3, 0.7, 0.0f)))));
+        //m_geometry.push_back(std::shared_ptr<Intersectable>(new Sphere(
+        //    XMVectorSet(-1.0f, -0.1f, -4.1f, 0.0f), 0.01f, Material(Material::Type::DIFFUSE, XMVectorSet(240.0f / 255.0f, 128.0f / 255.0f, 128.0f / 255.0f, 0.0f))
+        //)));
+        //m_geometry.push_back(std::shared_ptr<Intersectable>(new Sphere(
+        //    XMVectorSet(-1.9f, -0.5f, -4.1f, 0.0f), 0.01f, Material(Material::Type::DIFFUSE, XMVectorSet(255.0f / 255.0f, 105.0f / 255.0f, 180.0f / 255.0f, 0.0f))
+        //)));
+        //m_geometry.push_back(std::shared_ptr<Intersectable>(new Sphere(
+        //    XMVectorSet(-1.0f, -1.5f, -4.1f, 0.0f), 0.01f, Material(Material::Type::DIFFUSE, XMVectorSet(50.0f / 255.0f, 205.0f / 255.0f, 50.0f / 255.0f, 0.0f))
+        //)));
+        //m_geometry.push_back(std::shared_ptr<Intersectable>(new Sphere(
+        //    XMVectorSet(-1.0f, 1.0f, 4.0f, 0.0f), 0.01f, Material(Material::Type::DIFFUSE, XMVectorSet(255.0f / 255.0f, 215.0f / 255.0f, 0.0f, 0.0f)))));
+        //m_geometry.push_back(std::shared_ptr<Intersectable>(new Sphere(
+        //    XMVectorSet(4.0f, 2.0f, 2.0f, 0.0f), 0.3f, Material(Material::Type::SPECULAR, XMVectorSet(255.0f / 255.0f, 50.0f / 255.0f, 100.0f / 255.0f, 0.0f)))));
+        //m_geometry.push_back(std::shared_ptr<Intersectable>(new Sphere(
+        //    XMVectorSet(1.0f, 2.0f, 2.0f, 0.0f), 0.3f, Material(Material::Type::SPECULAR, XMVectorSet(155.0f / 255.0f, 150.0f / 255.0f, 60.0f / 255.0f, 0.0f)))));
+        //m_geometry.push_back(std::shared_ptr<Intersectable>(new Sphere(
+        //    XMVectorSet(-5.0f, 1.0f, 2.0f, 0.0f), 0.2f, Material(Material::Type::SPECULAR, XMVectorSet(205.0f / 255.0f, 50.0f / 255.0f, 0, 0.0f)))));
+        //m_geometry.push_back(std::shared_ptr<Intersectable>(new Sphere(
+        //    XMVectorSet(-3.0f, 2.0f, 2.0f, 0.0f), 0.01f, Material(Material::Type::SPECULAR, XMVectorSet(255.0f / 255.0f, 50.0f / 255.0f, 150.0f / 255.0f, 0.0f)))));
+        //m_geometry.push_back(std::shared_ptr<Intersectable>(new Sphere(
+        //    XMVectorSet(2.0f, 0.0f, 2.0f, 0.0f), 1.0f, Material(Material::Type::DIELECTRIC, XMVectorSet(0.85f, 0.9f, 1.0f, 0.0f), 1.3f, XMVectorSet(0.7, 0.3, 0.7, 0.0f)))));
        
-        m_geometry.push_back(std::unique_ptr<Intersectable>(new Sphere(
-            XMVectorSet(4.0f, -2.0f, 8.0f, 0.0f), 0.5f, Material(Material::Type::DIELECTRIC, XMVectorSet(0.35f, 0.4f, 1.0f, 0.0f), 1.5f, XMVectorSet(0.9, 0.8, 0.4, 0.0f)))));
+        //m_geometry.push_back(std::shared_ptr<Intersectable>(new Sphere(
+        //    XMVectorSet(4.0f, -2.0f, 8.0f, 0.0f), 0.5f, Material(Material::Type::DIELECTRIC, XMVectorSet(0.35f, 0.4f, 1.0f, 0.0f), 1.5f, XMVectorSet(0.9, 0.8, 0.4, 0.0f)))));
        
        
-        m_geometry.push_back(std::unique_ptr<Intersectable>(new Plane(
-            XMVectorSet(0.0f, -3.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), 40.0f, 40.0f, Material(Material::Type::DIFFUSE, XMVectorSet(1.0f, 0.0f, 1.0f, 0.0f))
-        )));
+        //m_geometry.push_back(std::shared_ptr<Intersectable>(new Plane(
+        //    XMVectorSet(0.0f, -3.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f), 40.0f, 40.0f, Material(Material::Type::DIFFUSE, XMVectorSet(1.0f, 0.0f, 1.0f, 0.0f))
+        //)));
 
-        /*m_geometry.push_back(std::unique_ptr<Intersectable>(new Torus(
+        /*m_geometry.push_back(std::shared_ptr<Intersectable>(new Torus(
             0.5f, 0.2f, Material(Material::Type::DIFFUSE, XMVectorSet(255.0f / 255.0f, 105.0f / 255.0f, 180.0f / 255.0f, 0.0f))
         )));*/
 
-       /* m_geometry.push_back(std::unique_ptr<Intersectable>(new Triangle(
+        /*m_geometry.push_back(std::shared_ptr<Intersectable>(new Triangle(
             { XMVectorSet(-2.0f, -1.0f, -2.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) },
             { XMVectorSet(2.0f, -1.0f, -2.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) },
+            { XMVectorSet(2.0f, -1.0f, 2.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) },
+            Material(Material::Type::DIFFUSE, XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f))
+        )));
+
+        m_geometry.push_back(std::shared_ptr<Intersectable>(new Triangle(
+            { XMVectorSet(-3.0f, -1.0f, -2.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) },
+            { XMVectorSet(2.0f, -1.0f, -2.0f, 0.0f), XMVectorSet(1.0f, 1.0f, 0.0f, 0.0f) },
+            { XMVectorSet(2.0f, -4.0f, 2.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) },
+            Material(Material::Type::DIFFUSE, XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f))
+        )));
+
+        m_geometry.push_back(std::shared_ptr<Intersectable>(new Triangle(
+            { XMVectorSet(-2.0f, -1.0f, -1.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) },
+            { XMVectorSet(2.0f, 0.0f, -2.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) },
             { XMVectorSet(2.0f, -1.0f, 2.0f, 0.0f), XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f) },
             Material(Material::Type::DIFFUSE, XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f))
         )));*/
@@ -413,6 +427,7 @@ void Game::LoadAssets()
         XMMATRIX objToWorld = obj  * rotation * scale * translation;
         
         Mesh* bunny = new Mesh(objToWorld, Material(Material::Type::DIFFUSE, XMVectorSet(50.0f / 255.0f, 205.0f / 255.0f, 50.0f / 255.0f, 0.0f)), m_geometry);
+        m_BVH = new BVH(m_geometry, 4);
        /* m_lights.push_back(Light(XMVectorSet(-1.0f, 1.f, -4.0f, 0.0f), XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 1.0f, 1.0f, 0.f), 10.0f, Light::Type::SPOT, 15 * XM_PI / 180.0f, 5.0f * XM_PI / 180.0f));
         m_lights.push_back(Light(XMVectorSet(-1.0f, 2.f, -4.0f, 0.0f), XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f), XMVectorSet(0.5f, 0.78f, 0.9f, 0.0f), 10.0f, Light::Type::SPOT, 15 * XM_PI / 180.0f, 5.0f * XM_PI / 180.0f));
         m_lights.push_back(Light(XMVectorSet(8.0f, 1.5f, -4.0f, 0.0f), XMVectorSet(0.0f, -1.0f, 0.0f, 0.0f), XMVectorSet(1.0f, 0.0f, 1.0f, 0.0f), 10.0f, Light::Type::SPOT, 45 * XM_PI / 180.0f, 10.0f * XM_PI / 180.0f));
@@ -441,8 +456,8 @@ void Game::GenerateTextureData()
    
     UINT8* pData = &m_rtOutput[0];
     bool parallel = m_parallel > 0 ? true : false;
-omp_set_num_threads(omp_get_max_threads());
-#pragma omp parallel for schedule(dynamic, 50) num_threads(omp_get_max_threads()) if (parallel)
+//omp_set_num_threads(omp_get_max_threads());
+//#pragma omp parallel for schedule(dynamic, 50) num_threads(omp_get_max_threads()) if (parallel)
     for (INT p = 0; p < TextureWidth * TextureHeight; p++)
     {
         UINT i = (UINT)p / TextureHeight;
@@ -498,7 +513,8 @@ omp_set_num_threads(omp_get_max_threads());
 bool Game::Trace(Ray& ray,const Intersectable*& object)
 {
     float closestHit = 1000000.0f;
-    
+    ray.t = 1000000000000.0f;
+    /*
     for (int i = 0; i < m_geometry.size(); i++)
     {
         if (m_geometry[i]->Intersect(ray) && ray.t < closestHit )
@@ -509,7 +525,8 @@ bool Game::Trace(Ray& ray,const Intersectable*& object)
         
     }
     ray.t = closestHit;
-    return (object != nullptr);
+    return (object != nullptr);*/
+    return m_BVH->Intersect(ray, object);
 }
 
 XMVECTOR Game::ClosestHitShade(Ray& ray)
@@ -540,8 +557,8 @@ XMVECTOR Game::ClosestHitShade(Ray& ray)
                 L = XMVector3Normalize(L);
                 distance = light.type == Light::Type::DIRECTIONAL ? 10e9 : distance;
                 Ray shadowRay(surf.position, L, Ray::EPSILON, 0, distance, Ray::EPSILON);
-                float shadowAttenuation = AnyHit(shadowRay) ? 0.0f : 1.0f;
-                //float shadowAttenuation = 1.0f;
+               /* float shadowAttenuation = AnyHit(shadowRay) ? 0.0f : 1.0f;*/
+                float shadowAttenuation = 1.0f;
                 float totalAttenuation = light.CosineAttenuation(surf.position, surf.normal) * shadowAttenuation;
                 if (light.type == Light::Type::POINT)
                     totalAttenuation *= light.Attenuate(surf.position);

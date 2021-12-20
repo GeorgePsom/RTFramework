@@ -37,55 +37,7 @@ bool Triangle::Intersect(Ray& ray)
 	if (ray.t < 0)
 		return false;
 	return true;
-	/*XMVECTOR v0v1 = v1.position - v0.position;
-	XMVECTOR v0v2 = v2.position - v0.position;
-	XMVECTOR N = XMVector3Cross(v0v1, v0v2);
-	float denom = XMVectorGetX(XMVector3Dot(N, N));
-
-	float NdotRayDir = XMVectorGetX(XMVector3Dot(N, ray.direction));
-	if (fabs(NdotRayDir) < Ray::EPSILON)
-		return false;
-
-	float d = XMVectorGetX(XMVector3Dot(N, v0.position));
-	ray.t = (XMVectorGetX(XMVector3Dot(N, ray.origin)) + d) / NdotRayDir;
-
-	if (ray.t < 0)
-		return false;
-
-	XMVECTOR P = ray.origin + ray.t * ray.direction;
-
-
-	XMVECTOR edge0 = v1.position - v0.position;
-	XMVECTOR vp0 = P - v0.position;
-	XMVECTOR C = XMVector3Cross(edge0, vp0);
-
-	if (XMVectorGetX(XMVector3Dot(N, C)) < 0)
-		return false;
-
-	XMVECTOR edge1 = v2.position - v1.position;
-	XMVECTOR vp1 = P - v1.position;
-	C = XMVector3Cross(edge1, vp1);
-	float u = XMVectorGetX(XMVector3Dot(N, C));
-	if ( u < 0)
-		return false;
-
-	XMVECTOR edge2 = v0.position - v2.position;
-	XMVECTOR vp2 = P - v2.position;
-	C = XMVector3Cross(edge2, vp2);
-	float v = XMVectorGetX(XMVector3Dot(N, C));
-	if (u < 0)
-		return false;
-
-	u /= denom;
-	v /= denom;
-	ray.bary = XMVectorSet(u, v, 0.0f, 0.0f);
-	return true;*/
-
 	
-
-
-
-
 }
 
 void Triangle::GetSurfaceData(Surface& surf, Ray& ray) const
@@ -96,5 +48,27 @@ void Triangle::GetSurfaceData(Surface& surf, Ray& ray) const
 	surf.normal = XMVector4Normalize(u * v0.normal + v * v1.normal + (1 - u - v) * v2.normal);
 	surf.position = u * v0.position + v * v1.position + (1 - u - v) * v2.position;
 	surf.tex = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+
+}
+
+void Triangle::CalculateAABB(XMFLOAT3& pMin, XMFLOAT3& pMax) const
+{
+	XMFLOAT3 v0f, v1f, v2f;
+	XMStoreFloat3(&v0f, v0.position);
+	XMStoreFloat3(&v1f, v1.position);
+	XMStoreFloat3(&v2f, v2.position);
+
+	pMin = {
+		min(min(v0f.x, v1f.x), v2f.x),
+		min(min(v0f.y, v1f.y), v2f.y),
+		min(min(v0f.z, v1f.z), v2f.z)
+	};
+
+	pMax = {
+		max(max(v0f.x, v1f.x), v2f.x),
+		max(max(v0f.y, v1f.y), v2f.y),
+		max(max(v0f.z, v1f.z), v2f.z)
+	};
+
 
 }

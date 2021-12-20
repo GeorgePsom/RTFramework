@@ -3,7 +3,7 @@
 class Mesh
 {
 public:
-	Mesh(const XMMATRIX& worldSpace,  Material& mat, std::vector<std::unique_ptr<Intersectable>>& geo)
+	Mesh(const XMMATRIX& worldSpace,  Material& mat, std::vector<std::shared_ptr<Intersectable>>& geo)
 	{
         
         // Test assmp

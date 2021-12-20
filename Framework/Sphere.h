@@ -10,6 +10,7 @@ public:
 	Sphere();
 	bool Intersect(Ray& ray)  override;
 	void GetSurfaceData(Surface& surf, Ray& ray) const override;
+	void CalculateAABB(XMFLOAT3& pMin, XMFLOAT3& pMax) const override;
 	
 	
 	Material mat;
