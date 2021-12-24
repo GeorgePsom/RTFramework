@@ -23,9 +23,9 @@ float4 PSMain(PSInput input) : SV_TARGET
 
 	float3 color;
 	// Chromatic Aberration
-	color.r = g_texture.Sample(g_sampler, input.uv - float2(0.001f, 0.001f)).r;
+	color.r = g_texture.Sample(g_sampler, input.uv - 0.0f*float2(0.001f, 0.001f)).r;
 	color.g = g_texture.Sample(g_sampler, input.uv).g;
-	color.b = g_texture.Sample(g_sampler, input.uv - float2(0.002f, 0.002f)).b;
+	color.b = g_texture.Sample(g_sampler, input.uv - 0.0f* float2(0.002f, 0.002f)).b;
 
 
 	

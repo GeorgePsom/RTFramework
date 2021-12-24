@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 
-float Ray::EPSILON = 0.1f;
+float Ray::EPSILON = 0.0001f;
 Ray::Ray( XMVECTOR& o,  XMVECTOR& d, float t, int depth, float tmax, float tmin)
 {
 	tMin = tmin;
@@ -11,6 +11,7 @@ Ray::Ray( XMVECTOR& o,  XMVECTOR& d, float t, int depth, float tmax, float tmin)
 	this->t = t;
 	this->depth = depth;
 	bary = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+	throughput = XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 Ray::Ray()

@@ -47,7 +47,7 @@ private:
 	float focal_distance;
 	float yaw;
 	float pitch;
-	const float SENSITIVITY = 0.05f;
+	const float SENSITIVITY = 0.1f;
 	const float YAW = -90.0f;
 	const float PITCH = 0.0f;
 

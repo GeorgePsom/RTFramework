@@ -74,10 +74,21 @@ private:
 	int m_depth;
 	StepTimer m_timer;
 	float m_prevTime;
-	std::vector<Light> m_lights;
+	//std::vector<Light> m_lights;
 	std::vector<std::shared_ptr<Intersectable>> m_geometry;
+	std::vector<std::shared_ptr<Plane>> m_lights;;
+
 	BVH* m_BVH;
 	std::vector<UINT8> m_rtOutput;
+	std::vector<XMVECTOR> m_prevOutput;
+	UINT m_Frames;
+	float m_energy;
+	bool m_NEE;
+	bool m_RR;
+	bool m_BRDF;
+	bool m_blueNoise;
+	bool m_MIS;
+	bool m_sampleLights;
 
 
 	// Synchronization Objects
@@ -85,15 +96,17 @@ private:
 	HANDLE m_fenceEvent;
 	ComPtr<ID3D12Fence> m_fence;
 	UINT64 m_fenceValue;
+	XMVECTOR m_prevFrame;
+	bool cameraMoved;
 
 	void LoadPipeline();
 	void LoadAssets();
 	void GenerateTextureData();
 	bool Trace(Ray& ray, const Intersectable*& object);
-	XMVECTOR ClosestHitShade(Ray& ray);
+	XMVECTOR ClosestHitShade(Ray& ray, UINT randSeed, bool lastSpecular);
 	bool AnyHit(Ray& ray);
 	XMVECTOR GetTexture(XMVECTOR& tex);
-	void CalculateFrameStats();
+	void CalculateFrameStats(float energy);
 	void PopulateCommandList();
 	void WaitForPreviousFrame();
 

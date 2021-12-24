@@ -12,7 +12,7 @@ class Triangle : public Intersectable
 {
 public:
 
-	Triangle(const Vertex& p0, const Vertex& p1, const Vertex& p2, Material& mat);
+	Triangle(const Vertex& p0, const Vertex& p1, const Vertex& p2, Material& mat, bool light);
 	~Triangle();
 	Triangle();
 	bool Intersect(Ray& ray) override;

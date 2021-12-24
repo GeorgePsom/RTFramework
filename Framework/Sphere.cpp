@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-Sphere::Sphere(const XMVECTOR& c, float radius, Material& material) :
-	center(c), r2(sqrt(radius)), Intersectable(material)
+Sphere::Sphere(const XMVECTOR& c, float radius, Material& material, bool light) :
+	center(c), r2((radius * radius)), Intersectable(material, light), isLight(light)
 {}
 
 Sphere::Sphere() 

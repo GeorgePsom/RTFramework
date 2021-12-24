@@ -22,5 +22,6 @@ public:
 	float tMax;
 	float tMin;
 	int depth;
+	XMVECTOR throughput;
 };
 

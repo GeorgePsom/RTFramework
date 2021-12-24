@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-Triangle::Triangle(const Vertex& P0, const Vertex& P1, const Vertex& P2, Material& m) :
-	v0(P0), v1(P1), v2(P2), Intersectable(m)
+Triangle::Triangle(const Vertex& P0, const Vertex& P1, const Vertex& P2, Material& m, bool light) :
+	v0(P0), v1(P1), v2(P2), Intersectable(m, light)
 {
 }
 

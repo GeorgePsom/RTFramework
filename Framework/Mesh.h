@@ -37,7 +37,7 @@ public:
                 { vertices[face.mIndices[0]].position, vertices[face.mIndices[0]].normal },
                 { vertices[face.mIndices[1]].position, vertices[face.mIndices[1]].normal },
                 { vertices[face.mIndices[2]].position, vertices[face.mIndices[2]].normal },
-                mat)));
+                mat, false)));
         }
 	}
 };
