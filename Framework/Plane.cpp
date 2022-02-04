@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-Plane::Plane(XMVECTOR& U, XMVECTOR& V, XMVECTOR& Pos, bool reverseNormal, Material& m, bool light) : position(Pos), Intersectable(m, light)
+Plane::Plane(XMVECTOR& U, XMVECTOR& V, XMVECTOR& Pos, bool reverseNormal, Material& m, bool light, int lightIndex) : position(Pos), Intersectable(m, light, lightIndex)
 {
     isLight = light;
     mat = m;

@@ -6,7 +6,7 @@ class Plane : public Intersectable
 {
 
 public:
-	Plane(XMVECTOR& u, XMVECTOR& v, XMVECTOR& position, bool reverseNormal, Material& mat, bool light);
+	Plane(XMVECTOR& u, XMVECTOR& v, XMVECTOR& position, bool reverseNormal, Material& mat, bool light, int lightIndex = -1);
 	~Plane();
 	bool Intersect(Ray& ray)  override;
 	void GetSurfaceData(Surface& surf, Ray& ray) const override;

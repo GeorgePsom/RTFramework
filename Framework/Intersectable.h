@@ -6,7 +6,7 @@
 class Intersectable
 {
 public:
-	Intersectable(Material& material, bool light) : mat(material), isLight(light)  {};
+	Intersectable(Material& material, bool light, int lIndex = -1) : mat(material), isLight(light), lightIndex(lIndex)  {};
 	Intersectable() {};
 	virtual bool Intersect(Ray& ray)   = 0;
 	virtual void GetSurfaceData(Surface& surf, Ray& ray) const = 0;
@@ -14,5 +14,6 @@ public:
 
 	Material mat;
 	bool isLight;
+	int lightIndex = -1;
 };
 

@@ -5,7 +5,7 @@ class Light
 public:
 	enum class Type {POINT, DIRECTIONAL, SPOT};
 
-	Light(XMVECTOR& pos, XMVECTOR& col, float strength, Type type);
+	Light(XMVECTOR& pos, XMVECTOR& col, float strength, Type type, int object);
 	Light(XMVECTOR& pos, XMVECTOR& direction,  XMVECTOR& col, float strength, Type type, float cutOff,float  outerCutOff);
 	~Light();
 	inline float Light::Attenuate(XMVECTOR& pos)
@@ -38,6 +38,7 @@ public:
 	float intensity;
 	XMVECTOR position;
 	XMVECTOR direction;
+	int objectIndex;
 	XMVECTOR color;
 	float cutOff; // in radians
 	float outerCutOff;

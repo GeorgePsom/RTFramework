@@ -84,6 +84,7 @@ Game::Game(UINT width, UINT height, std::wstring name) :
     m_RR = false;
     m_BRDF = false;
     m_MIS = false;
+    m_BPT = true;
 }
 
 void Game::OnInit()
@@ -477,28 +478,42 @@ void Game::LoadAssets()
             XMVectorSet(-10.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, -10.0f, 0.0f), XMVectorSet(5.0f, 3.0f, 5.0f, 0.0f), false, Material(Material::Type::DIFFUSE, XMVectorSet(0.9f, 0.5f, 0.3f, 0.0f)), false
         )));
 
+
+       
+
+
+
+
         m_geometry.push_back(std::shared_ptr<Intersectable>(new Plane(
-           XMVectorSet(-4.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, -4.0, 0.0f), XMVectorSet(2.0f, 1.0f, 2.0f, 0.0f), false, Material(Material::Type::DIFFUSE, XMVectorSet(10.0f, 10.0f, 10.0f, 0.0f)), true
+            XMVectorSet(-0.25f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, -0.25, 0.0f), XMVectorSet(4.0f, 1.0f, 3.0f, 0.0f), false,
+            Material(Material::Type::DIFFUSE, XMVectorSet(1000.0f, 0.25f, 0.25f, 0.0f)), true, 0
         )));
 
         m_lights.push_back(std::shared_ptr<Plane>(new Plane(
-            XMVectorSet(-4.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, -4.0f, 0.0f), XMVectorSet(2.0f, 1.0f, 2.0f, 0.0f), false, Material(Material::Type::DIFFUSE, XMVectorSet(10.0f, 10.0f, 10.0f, 0.0f)), true
+            XMVectorSet(-0.25, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, -0.25, 0.0f), XMVectorSet(4.0f, 1.0f, 3.0f, 0.0f), false,
+            Material(Material::Type::DIFFUSE, XMVectorSet(1000.0f, 0.25f, 0.25f, 0.0f)), true
         )));
 
         m_geometry.push_back(std::shared_ptr<Intersectable>(new Plane(
-            XMVectorSet(-1.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, -1.0, 0.0f), XMVectorSet(5.0f, 1.0f, 3.0f, 0.0f), false, Material(Material::Type::DIFFUSE, XMVectorSet(100.0f, 0.5f, 0.5f, 0.0f)), true
+            XMVectorSet(-0.25f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, -0.25, 0.0f), XMVectorSet(1.0f, 2.0f, 1.0f, 0.0f), false, Material(Material::Type::DIFFUSE,
+                XMVectorSet(100.0f, 100.0f, 100.0f, 0.0f)), true, 1
         )));
 
         m_lights.push_back(std::shared_ptr<Plane>(new Plane(
-            XMVectorSet(-1.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f), XMVectorSet(5.0f, 1.0f, 3.0f, 0.0f), false, Material(Material::Type::DIFFUSE, XMVectorSet(100.0f, 0.5f, 0.5f, 0.0f)), true
+            XMVectorSet(-0.25f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, -0.25f, 0.0f), XMVectorSet(1.0f, 2.0f, 1.0f, 0.0f), false,
+            Material(Material::Type::DIFFUSE, XMVectorSet(100.0f, 100.0f, 100.0f, 0.0f)), true
         )));
-        m_geometry.push_back(std::shared_ptr<Intersectable>(new Plane(
-            XMVectorSet(-1.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, -1.0, 0.0f), XMVectorSet(5.0f, 1.0f, -3.0f, 0.0f), false, Material(Material::Type::DIFFUSE, XMVectorSet(0.5f, 0.5f, 100.0f, 0.0f)), true
+
+
+        /*m_geometry.push_back(std::shared_ptr<Intersectable>(new Plane(
+            XMVectorSet(-0.25, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, -0.25, 0.0f), XMVectorSet(4.0f, 1.0f, -3.0f, 0.0f), false,
+            Material(Material::Type::DIFFUSE, XMVectorSet(0.25f, 1000.0f, 0.25f, 0.0f)), true, 2
         )));
 
         m_lights.push_back(std::shared_ptr<Plane>(new Plane(
-            XMVectorSet(-1.0f, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f), XMVectorSet(5.0f, 1.0f, -3.0f, 0.0f), false, Material(Material::Type::DIFFUSE, XMVectorSet(0.5f, 0.5f, 100.0f, 0.0f)), true
-        )));
+            XMVectorSet(-0.25, 0.0f, 0.0f, 0.0f), XMVectorSet(0.0f, 0.0f, -0.25, 0.0f), XMVectorSet(4.0f, 1.0f, -3.0f, 0.0f), false,
+            Material(Material::Type::DIFFUSE, XMVectorSet(0.25f, 1000.0f, 0.25f, 0.0f)), true
+        )));*/
 
 
         /*m_geometry.push_back(std::shared_ptr<Intersectable>(new Torus(
@@ -574,7 +589,7 @@ omp_set_num_threads(omp_get_max_threads());
         srand(12);
         
         XMVECTOR color = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-        for (int s = 0; s < m_samples; s++)
+        for (int q = 0; q < m_samples; q++)
         {
             UINT randSeed = initRand(p, m_Frames);
             float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
@@ -598,8 +613,36 @@ omp_set_num_threads(omp_get_max_threads());
             
 
             Ray ray = m_camera->GetRayDirection(XMVectorGetX(uv), XMVectorGetY(uv));
-           
-            XMVECTOR result = ClosestHitShade(ray, randSeed, true);
+            XMVECTOR result = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+            std::vector<Path> cameraPaths(m_depth + 2);
+            std::vector<Path> lightPaths(m_depth + 1);
+            if (m_BPT)
+            {
+                
+                int nCameraPaths = CreateCameraPaths(ray, cameraPaths, randSeed);
+                int nLightPaths = CreateLightPaths(ray, lightPaths, randSeed);
+                int nPaths = 0;
+                for (int t = 2; t <= nCameraPaths; t++)
+                {
+                    for (int s = 0; s <= nLightPaths; s++)
+                    {
+                        int depth = t + s - 2;
+                        if ((s == 1 && t == 1) || depth < 0 || depth > m_depth)
+                            continue;
+                        
+                        XMVECTOR Lpath = ConnectPaths(cameraPaths, lightPaths, t, s, randSeed, nPaths);
+                        result = result + Lpath;
+                    }
+                }
+                //result /= max(1,nPaths);
+               
+                
+            }
+            else
+            {
+                result = ClosestHitShade(ray, randSeed, true);
+            }
+             
             XMVECTOR colorV = color + result;
             color = colorV;
 
@@ -970,7 +1013,7 @@ XMVECTOR Game::ClosestHitShade(Ray& ray, UINT randSeed, bool lastSpecular)
                 reflRay.ReflectRay(surf);
 
                 color = ClosestHitShade(reflRay, randSeed, true);
-                reflectColor += (m_BRDF ? 1.0f : 2.0f * Fr) * color * matColor;
+                reflectColor += (m_BRDF ? Fr : 2.0f ) * color * matColor;
                 if (inside) reflectColor = XMVectorMultiply(reflectColor, XMVectorExpE(-reflRay.t * object->mat.extinction));
             }
             else
@@ -984,7 +1027,7 @@ XMVECTOR Game::ClosestHitShade(Ray& ray, UINT randSeed, bool lastSpecular)
                     refrRay.origin = origin;
                     refrRay.t = 0.0f;
                     color = ClosestHitShade(refrRay, randSeed, true);
-                    refractedColor += (m_BRDF ? 1.0 : 2.0f * Ft) * color * matColor;
+                    refractedColor += (m_BRDF ? Ft : 2.0f) * color * matColor;
                     float distance = refrRay.t;
                     if (!inside) refractedColor = XMVectorMultiply(refractedColor, XMVectorExpE(-distance * object->mat.extinction));
 
@@ -1027,7 +1070,7 @@ bool Game::AnyHit(Ray& ray)
 {
     for (int i = 0; i < m_geometry.size(); i++)
     {
-        if (m_geometry[i]->Intersect(ray) && ray.t > ray.tMin && ray.t <= ray.tMax && !m_geometry[i]->isLight)
+        if (  m_geometry[i]->Intersect(ray) && ray.t > ray.tMin && ray.t <= ray.tMax && !m_geometry[i]->isLight )
         {
             return true;
         }
@@ -1036,6 +1079,414 @@ bool Game::AnyHit(Ray& ray)
     return false;
     
 
+}
+
+bool Game::AnyHit(Ray& ray, const Intersectable* obj, bool ignoreLights = true)
+{
+    for (int i = 0; i < m_geometry.size(); i++)
+    {
+        if ((m_geometry[i]).get() != obj && m_geometry[i]->Intersect(ray) && ray.t > ray.tMin && ray.t <= ray.tMax && ((!m_geometry[i]->isLight && ignoreLights) || !ignoreLights))
+        {
+            return true;
+        }
+
+    }
+    return false;
+
+
+}
+
+bool Game::AnyHit(Ray& ray, int lightIndex, bool ignoreLights = true)
+{
+    for (int i = 0; i < m_geometry.size(); i++)
+    {
+        if ((m_geometry[i]).get()->lightIndex != lightIndex && m_geometry[i]->Intersect(ray) && ray.t > ray.tMin && ray.t <= ray.tMax && ((!m_geometry[i]->isLight && ignoreLights) || !ignoreLights))
+        {
+            return true;
+        }
+
+    }
+    return false;
+
+
+}
+
+int Game::PathTrace(Ray& ray, XMFLOAT3 beta, float pdf, int maxDepth, Path::DirectionType type, std::vector<Path>& paths, UINT& randSeed)
+{
+    if (maxDepth == 0)
+        return 0;
+    int bounces = 1;
+    float pdfFwd = pdf;
+    float pdfRev = 0.0f;
+   
+    while (true)
+    {
+        Path& path = paths[bounces];
+        Path& prevPath = paths[bounces - 1];
+        const Intersectable* object = nullptr;
+        if (XMVectorGetX(XMVector3Dot(XMLoadFloat3(&beta), XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f))) == 0)
+            break;
+        if (Trace(ray, object))
+        {
+            
+            Surface surf;
+            object->GetSurfaceData(surf, ray);
+            if (object->isLight)
+            {
+                if (type == Path::DirectionType::CameraDir)
+                {
+                    
+                    path = Path::CreateLightPath(ray, surf, beta, pdfFwd);
+                    path.object = object;
+                    
+                    ++bounces;
+
+                }
+                break;
+            }
+            else
+            {
+                path = Path::CreateSurfacePath(ray, surf, beta, prevPath, pdfFwd);
+                path.object = object;
+                if (++bounces >= maxDepth)
+                    break;
+                if (object->mat.type == Material::Type::DIFFUSE)
+                {
+                    float u = nextRand(randSeed);
+                    float v = nextRand(randSeed);
+                    XMVECTOR wi;
+                    float r = sqrt(u);
+                    float theta = 2 * XM_PI * v;
+                    wi = XMVector3Normalize(XMVectorSet(r * cos(theta), r * sin(theta), sqrt(1 - u), 0.0f));
+                    XMVECTOR bitangent, tangent;
+
+                    if (fabs(XMVectorGetX(surf.normal)) == 1.0)
+                    {
+                        bitangent = XMVector3Normalize(XMVector3Cross(surf.normal, XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)));
+                        tangent = XMVector3Normalize(XMVector3Cross(bitangent, surf.normal));
+                        bitangent = XMVector3Normalize(XMVector3Cross(surf.normal, tangent));
+
+                    }
+                    else
+                    {
+                        bitangent = XMVector3Normalize(XMVector3Cross(XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), surf.normal));
+                        tangent = XMVector3Normalize(XMVector3Cross(surf.normal, bitangent));
+                        bitangent = XMVector3Normalize(XMVector3Cross(tangent, surf.normal));
+
+                    }
+                    wi = XMVectorGetX(wi) * tangent + XMVectorGetY(wi) * bitangent + XMVectorGetZ(wi) * surf.normal;
+                    pdfFwd =max(0.0f, XMVectorGetX(XMVector3Dot(surf.normal, wi))) * XM_1DIVPI;
+                    XMStoreFloat3(&beta, XMLoadFloat3(&beta) * object->mat.color);
+                    pdfRev = max(0.0f, XMVectorGetX(XMVector3Dot(surf.normal, -ray.direction))) * XM_1DIVPI;    
+                    ray.direction = wi;
+                    ray.origin = surf.position + ray.direction * Ray::EPSILON;
+                    ray.t = Ray::EPSILON;
+                }
+                else if (object->mat.type == Material::Type::SPECULAR)
+                {
+                    ray.ReflectRay(surf);
+                    XMStoreFloat3(&beta, XMLoadFloat3(&beta) * object->mat.color);
+                    path.delta = true;
+                    pdfFwd = 0.0f;
+                    pdfRev = 0.0f;
+                    ray.origin = surf.position + ray.direction * Ray::EPSILON;
+                    ray.t = Ray::EPSILON;
+                }
+                else if (object->mat.type == Material::Type::DIELECTRIC)
+                {
+                    float ior = object->mat.I_IOR;
+                    float n1 = 1.0f;
+                    float n2 = object->mat.IOR;
+                    XMVECTOR dir = ray.direction;
+                    float cosThetaI = XMVectorGetX(XMVector3Dot(surf.normal, -dir));
+                    bool inside = false;
+                    if (cosThetaI < 0) // We are inside the object reverse the normal and IOR
+                    {
+                        inside = true;
+                        ior = object->mat.IOR;
+                        std::swap(n1, n2);
+                        surf.normal = -surf.normal;
+                        
+                        cosThetaI = -cosThetaI;
+                    }
+                    float ior2 = ior * ior;
+                    float cosThetaI2 = cosThetaI * cosThetaI;
+                    float k = 1.0f - ior2 * (1 - cosThetaI2);
+
+                    float Fr = 1.0f;
+                    if (k > 0)
+                    {
+                        float sinThetaCrit = ior * sqrtf(max(0.0f, 1 - cosThetaI2));
+                        float cosThetaCrit = sqrtf(max(0.0f, (1.0f - sinThetaCrit * sinThetaCrit)));
+
+                        float num1 = n1 * cosThetaI - n2 * cosThetaCrit;
+                        float num2 = n1 * cosThetaCrit - n2 * cosThetaI;
+                        float denom1 = n1 * cosThetaI + n2 * cosThetaCrit;
+                        float denom2 = n1 * cosThetaCrit + n2 * cosThetaI;
+                        float num12 = num1 * num1;
+                        float num22 = num2 * num2;
+                        float denom12 = denom1 * denom1;
+                        float denom22 = denom2 * denom2;
+                        Fr = 0.5f * (num12 / denom12 + num22 / denom22);
+                    }
+
+                    float Ft = 1.0f - Fr;
+                    bool chooseReflection = nextRand(randSeed) <= Fr ? true : false;
+                    if (chooseReflection)
+                    {
+                        float attenuationDistance = ray.t;
+                        ray.ReflectRay(surf);
+                        ray.origin = surf.position + ray.direction * Ray::EPSILON;
+                        ray.t = Ray::EPSILON;
+                        path.delta = true;
+                        pdfFwd = Fr;
+                        pdfRev = 0.0f;
+                        if (inside)
+                        {
+                            XMVECTOR attenuatedBeta = XMVectorMultiply(XMLoadFloat3(&beta)
+                                , XMVectorExpE(-attenuationDistance * object->mat.extinction));
+                            XMStoreFloat3(&beta, attenuatedBeta);
+                        }
+                        XMStoreFloat3(&beta, XMLoadFloat3(&beta) * object->mat.color / Fr);
+                    }
+                    else
+                    {
+                        float attenuationDistance = ray.t;
+                        ray.RefractRay(surf, cosThetaI, ior, k, !inside);
+                        ray.origin = surf.position - Ray::EPSILON * surf.normal;
+                        ray.t = 0.0f;
+                        path.delta = true;
+                        pdfFwd = 0.0;
+                        pdfRev = 0.0f;
+                        if (!inside)
+                        {
+                            XMVECTOR attenuatedBeta = XMVectorMultiply(XMLoadFloat3(&beta)
+                                , XMVectorExpE(-attenuationDistance * object->mat.extinction));
+                            XMStoreFloat3(&beta, attenuatedBeta);
+                        }
+                        float nonsymmetryFactor = type == Path::DirectionType::CameraDir ? ior2 : 1.0f;
+                        XMStoreFloat3(&beta, XMLoadFloat3(&beta) * nonsymmetryFactor * object->mat.color / Ft);
+                    }
+                        
+                }
+            }
+            
+            
+             
+              
+        }
+        else
+        {
+            return bounces;
+        }
+        prevPath.pdfPrev = path.ConvertDensity(pdfRev, prevPath);
+
+    }
+    return bounces;
+}
+
+int Game::CreateLightPaths(Ray& ray, std::vector<Path>& lightPaths, UINT& randSeed)
+{
+    int lightIndex = int(m_lights.size() * nextRand(randSeed));
+    float x1 = nextRand(randSeed);
+    float x2 = nextRand(randSeed);
+    XMVECTOR lightPos = m_lights[lightIndex]->SamplePoint(x1, x2);
+    float pdf = 1 / m_lights[lightIndex]->GetArea();
+    x1 = nextRand(randSeed);
+    x2 = nextRand(randSeed);
+    XMVECTOR wi;
+    float r = sqrt(x1);
+    float theta = 2 * XM_PI * x2;
+    wi = XMVector3Normalize(XMVectorSet(r * cos(theta), r * sin(theta), sqrt(1 - x1), 0.0f));
+    XMVECTOR bitangent, tangent;
+
+    if (fabs(XMVectorGetX(m_lights[lightIndex]->normal)) == 1.0)
+    {
+        bitangent = XMVector3Normalize(XMVector3Cross(m_lights[lightIndex]->normal, XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f)));
+        tangent = XMVector3Normalize(XMVector3Cross(bitangent, m_lights[lightIndex]->normal));
+        bitangent = XMVector3Normalize(XMVector3Cross(m_lights[lightIndex]->normal, tangent));
+
+    }
+    else
+    {
+        bitangent = XMVector3Normalize(XMVector3Cross(XMVectorSet(1.0f, 0.0f, 0.0f, 0.0f), m_lights[lightIndex]->normal));
+        tangent = XMVector3Normalize(XMVector3Cross(m_lights[lightIndex]->normal, bitangent));
+        bitangent = XMVector3Normalize(XMVector3Cross(tangent, m_lights[lightIndex]->normal));
+
+    }
+    wi = XMVectorGetX(wi) * tangent + XMVectorGetY(wi) * bitangent + XMVectorGetZ(wi) * m_lights[lightIndex]->normal;
+    pdf *= max(0.0f, XMVectorGetX(XMVector3Dot(m_lights[lightIndex]->normal, wi))) * XM_1DIVPI;
+    pdf *= m_lights.size();
+    
+    ray.direction = wi;
+    ray.origin = lightPos + Ray::EPSILON * wi;
+    ray.t = Ray::EPSILON;
+    Surface surf;
+    m_lights[lightIndex]->GetSurfaceData(surf, ray);
+    XMFLOAT3 beta;
+    XMStoreFloat3(&beta, m_lights[lightIndex]->mat.color);
+    lightPaths[0] = Path::CreateLightPath(ray, surf, beta, pdf);
+    XMStoreFloat3(&beta, XMLoadFloat3(&beta) * XMVectorGetX(XMVector3Dot(surf.normal, wi)) / pdf);
+    return PathTrace(ray, beta, pdf, m_depth, Path::DirectionType::LightDir, lightPaths, randSeed);
+    
+}
+
+XMVECTOR Game::ConnectPaths(std::vector<Path>& cameraPaths, std::vector<Path>& lightPaths, int t, int s, UINT randSeed, int& nPaths)
+{
+    Path* newLightPath = nullptr;
+    XMVECTOR L = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+    if(t > 1 && s != 0 && cameraPaths[t-1].type == Path::Type::LightType)
+        return L;
+    if (s == 0)
+    {
+        Path& pt = cameraPaths[t - 1];
+        if (pt.type == Path::Type::LightType)
+        {
+            Path& prevPath = cameraPaths[t - 2];
+            XMVECTOR w = XMVector3Normalize(XMLoadFloat3(&prevPath.pos) - XMLoadFloat3(&pt.pos));
+            L = XMVectorGetX(XMVector3Dot(w, XMLoadFloat3(&pt.normal))) > 0.0 ? XMLoadFloat3(&pt.beta) * pt.object->mat.color : L;
+            nPaths++;
+        }
+        
+    }
+    else if (s == 1)
+    {
+       
+        Path& cp = cameraPaths[t - 1];
+        if (cp.object->mat.type != Material::Type::SPECULAR && cp.object->mat.type != Material::Type::DIELECTRIC &&
+            !cp.object->isLight)
+        {
+            int lightIndex = int(m_lights.size() * nextRand(randSeed));
+            float x1 = nextRand(randSeed);
+            float x2 = nextRand(randSeed);
+            XMVECTOR lightPos = m_lights[lightIndex]->SamplePoint(x1, x2);
+            float pdf = 1 /( m_lights[lightIndex]->GetArea() * m_lights.size());
+            XMVECTOR wi = lightPos - XMLoadFloat3(&cp.pos);
+            float distance = XMVectorGetX(XMVector3Length(wi));
+            pdf *= (distance * distance);
+            pdf /= max(0.0f, XMVectorGetX(XMVector3Dot(-wi, m_lights[lightIndex]->normal)));
+            Ray shadowRay;
+            shadowRay.direction = wi;
+            shadowRay.origin = XMLoadFloat3(&cp.pos) + Ray::EPSILON * wi;
+            shadowRay.t = 0.0f;
+            shadowRay.tMax = distance;
+            pdf  = !AnyHit(shadowRay, lightIndex, false) ? pdf : 0.0f;
+            if (pdf > 0)
+            {
+                Ray ray(lightPos, -wi, 0);
+                Surface surf;
+                m_lights[lightIndex]->GetSurfaceData(surf, ray);
+                XMFLOAT3 c;
+                XMStoreFloat3(&c, m_lights[lightIndex]->mat.color / pdf);
+                newLightPath =  &Path::CreateLightPath(ray, surf, c, 1 / (m_lights.size() * m_lights[lightIndex]->GetArea()));
+                L = XMLoadFloat3(&cp.beta) * cp.object->mat.color * XM_1DIVPI * XMLoadFloat3(&newLightPath->beta) * 
+                    max(0.0f, XMVectorGetX(XMVector3Dot(wi, XMLoadFloat3(&cp.normal))));
+            }
+
+        }
+            
+
+    }
+    else
+    {
+        Path &lp = lightPaths[s - 1];
+        Path& cp = cameraPaths[t - 1];
+        if (lp.object->mat.type == Material::Type::SPECULAR || lp.object->mat.type == Material::Type::DIELECTRIC ||
+            cp.object->mat.type == Material::Type::SPECULAR || cp.object->mat.type == Material::Type::DIELECTRIC||
+            cp.object->isLight)
+            return L;
+        L = XMLoadFloat3(&lp.beta) * lp.object->mat.color  * XMLoadFloat3(&cp.beta) * cp.object->mat.color * XM_1DIVPI;
+        XMVECTOR d = XMLoadFloat3(&lp.pos) - XMLoadFloat3(&cp.pos);
+        float g = 1 / XMVectorGetX(XMVector3LengthSq(d));
+        float gsqr = sqrt(g);
+        d *= gsqr;
+        g *= lp.type == Path::Type::SurfaceType ?  max(0.0f, XMVectorGetX(XMVector3Dot(XMLoadFloat3(&lp.normal), d))) : 1.0;
+        g *= cp.type == Path::Type::SurfaceType ? max(0.0, XMVectorGetX(XMVector3Dot(XMLoadFloat3(&cp.normal), -d))) : 1.0;
+        float distance = 1 / gsqr;
+        Ray shadowRay;
+        shadowRay.direction = d;
+        shadowRay.origin = XMLoadFloat3(&cp.pos) + Ray::EPSILON * d;
+        shadowRay.t = 0.0f;
+        shadowRay.tMax = distance;
+       
+        L *= !AnyHit(shadowRay, lp.object, false) ? g : 0.0f;
+        nPaths++;
+
+
+    }
+    bool isLZero = XMVectorGetX(XMVector3Dot(XMVectorSet(1.0f, 1.0f, 1.0f, 1.0f), L)) == 0;
+    float weight = isLZero ? 0.0f : MIS(cameraPaths, lightPaths, t, s, newLightPath);
+    
+    return L * weight;
+}
+
+float Game::MIS(std::vector<Path>& cameraPaths, std::vector<Path>& lightPaths, int t, int s, Path* newLightPath)
+{
+    if (s + t == 2)
+        return 1;
+    float sumRi = 0.0f;
+   
+    Path* qs = s > 0 ? &lightPaths[s - 1] : nullptr;
+    Path* pt = t > 0 ? &cameraPaths[t - 1] : nullptr;
+    Path* qsMinus = s > 1 ? &lightPaths[s - 2] : nullptr;   
+    Path* ptMinus = t > 1 ? &cameraPaths[t - 2] : nullptr;
+    
+
+    // Helper class to revert any changes we do to the camera and light paths after we exit the function
+    
+   
+
+    ScopedAssignment<float> sa0;
+    if (pt)  sa0 = { &pt->pdfPrev, s > 0 ? qs->Pdf(qsMinus, *pt) :
+                                    pt->type == Path::Type::LightType ?  1.0f / (m_lights[pt->object->lightIndex]->GetArea() * m_lights.size())   : 0.0f };
+    ScopedAssignment<float> sa1;
+    if (ptMinus)  sa1 = { &ptMinus->pdfPrev, s > 0 ? pt->Pdf(qs, *ptMinus)
+                                        : pt->PdfLight(*ptMinus) };
+    ScopedAssignment<float> sa2;
+    if(qs)  sa2 = {&qs->pdfPrev, pt->Pdf( ptMinus, *qs)};
+    
+    ScopedAssignment<float> sa3;
+    if (qsMinus) sa3 = {&qsMinus->pdfPrev, qs->Pdf(pt, *qsMinus)};
+    
+
+    ScopedAssignment<bool> sa4, sa5;
+    if (pt) sa4 = { &pt->delta, false };
+    if (qs)  sa5 = { &qs->delta ,false };
+
+    ScopedAssignment<Path> sa6;
+    if (s == 1)
+        sa6 = { qs, *newLightPath };
+    float ri = 1.0f;
+    for (int i = t - 1; i > 1; i--)
+    {
+        float pdfFwd = cameraPaths[i].pdfFwd;
+        float pdfPrev = cameraPaths[i].pdfPrev;
+        ri *= pdfFwd != 0 ? pdfFwd : 1.0f / pdfPrev != 0 ? pdfPrev : 1.0f;
+        if (!cameraPaths[i].delta && !cameraPaths[i - 1].delta)
+            sumRi += ri;
+    }
+
+    ri = 1.0f;
+    for (int i = s - 1; i >= 0; i--)
+    {
+        float pdfFwd = lightPaths[i].pdfFwd;
+        float pdfPrev = lightPaths[i].pdfPrev;
+        ri *= pdfFwd != 0 ? pdfFwd : 1.0f / pdfPrev != 0 ? pdfPrev : 1.0f;
+        bool prevDelta = false;
+        if (i > 0)
+            prevDelta = lightPaths[i - 1].delta;
+        if(!prevDelta && !lightPaths[i].delta)
+            sumRi += ri;
+    }
+
+    return 1 / (1 + sumRi);
+}
+
+
+int Game::CreateCameraPaths(Ray& ray, std::vector<Path>& paths, UINT& randSeed)
+{
+    paths[0] = Path::CreateCameraPath(ray, XMFLOAT3(1.0f, 1.0f, 1.0f));
+    return PathTrace(ray, paths[0].beta, 1.0f, m_depth + 1, Path::DirectionType::CameraDir, paths, randSeed);
 }
 XMVECTOR Game::GetTexture(XMVECTOR& tex)
 {
@@ -1211,8 +1662,10 @@ void Game::OnKeyUp(UINT8 key)
         m_sampleLights = m_sampleLights ? false : true;
         m_Frames = 0;
         break;
-    /*case 'T':
-        m_texturing *= -1.0f;*/
+    case 'T':
+        m_BPT = m_BPT ? false : true;
+        m_Frames = 0;
+        break;
     case 'Z':
         m_samples = min(m_samples + 1, 16);
         m_Frames = 0;

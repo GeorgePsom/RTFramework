@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "stdafx.h"
 
-Light::Light(XMVECTOR& pos, XMVECTOR& col, float strength, Type t) : type(t), color(col), intensity(strength), position(pos)
+Light::Light(XMVECTOR& pos, XMVECTOR& col, float strength, Type t, int objectId) : type(t), color(col), intensity(strength), position(pos), objectIndex(objectId)
 {
 	
 }
